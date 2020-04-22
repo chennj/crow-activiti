@@ -330,7 +330,7 @@ $(function () {
 	                    			'<a href="javascript:void(0)"><i class="fa fa-chevron-circle-right"></i>'+
 	                    			rdata.client.name+
 	                    			'</a>'+
-	                    			'<ul class="treeview-menu">'+
+	                    			'<ul class="treeview-menu menu-open">'+
 	                    				'<li  data-id="'+rdata.job.id+'" data-name="'+rdata.job.name+'">'+
 	                    				'<a href="javascript:void(0)"><i class="fa fa-chevron-circle-right"></i>'+
 	                    				rdata.job.name
