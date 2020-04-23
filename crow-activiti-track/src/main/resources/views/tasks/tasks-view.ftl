@@ -118,8 +118,8 @@
                 	<!-- 需要搜索的结果集 -->
                 	<div class="row">
                 		<div id="tree-clients-jobs">
-                		<!-- ul class="nav nav-pills nav-stacked clients-jobs-list" data-widget="tree"-->
-                		<ul class="nav nav-pills nav-stacked clients-jobs-list">
+                		<ul class="nav nav-pills nav-stacked clients-jobs-list" data-widget="tree">
+                		<!-- ul class="nav nav-pills nav-stacked clients-jobs-list"-->
                 		</ul>
                 		</div>
                 	</div>

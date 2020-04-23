@@ -65,7 +65,7 @@ $(function () {
             '<a href="#">'+
             '  <i class="fa fa-dashboard"></i> <span>Dashboard</span>'+
             '  <span class="pull-right-container">'+
-            '    <i class="fa fa-angle-left pull-right"></i>'+
+            '    <i class="fa fa-asterisk pull-right"></i>'+
             '  </span>'+
             '</a>'+
             '<ul class="treeview-menu">'+
@@ -261,7 +261,7 @@ $(function () {
                         icon: '1',
                         end: function(layero, index){
                     		var li = 
-                    			'<li data-id="'+data.data.id+'" data-name="'+data.data.name+'">'+
+                    			'<li class="treeview" data-id="'+data.data.id+'" data-name="'+data.data.name+'">'+
                     			'<a href="javascript:void(0)"><i class="fa fa-chevron-circle-right"></i>'+
                     			data.data.name+
                     			'</a>'+
@@ -323,39 +323,45 @@ $(function () {
                         icon: '1',
                         end: function(layero, index){
                         	var rdata = data.data;
-                    		var li = $('#tree-clients-jobs > ul > li').data(rdata.businessKey);
+                        	var html;
+                        	console.log('li.selected = #tree-clients-jobs > ul > li[data-id="'+rdata.businessKey+'"]');
+                    		var li = $('#tree-clients-jobs > ul > li[data-id="'+rdata.businessKey+'"]');
                     		if (li == null){
                     			html = 
-                    				'<li data-id="'+rdata.client.id+'" data-name="'+rdata.client.name+'">'+
+                    				'<li class="treeview menu-open" data-id="'+rdata.client.id+'" data-name="'+rdata.client.name+'" style="display:block;">'+
 	                    			'<a href="javascript:void(0)"><i class="fa fa-chevron-circle-right"></i>'+
 	                    			rdata.client.name+
 	                    			'</a>'+
-	                    			'<ul class="treeview-menu menu-open">'+
+	                    			'<ul class="treeview-menu" style="display:block;">'+
 	                    				'<li  data-id="'+rdata.job.id+'" data-name="'+rdata.job.name+'">'+
 	                    				'<a href="javascript:void(0)"><i class="fa fa-chevron-circle-right"></i>'+
 	                    				rdata.job.name
-	                    				'</a>'+
 	                    	            '<span class="pull-right-container">'+
-	                    	            '<i class="fa fa-angle-left pull-right"></i>'+
+	                    	            '<i class="fa fa-asterisk pull-right"></i>'+
 	                    	            '</span>'+
+	                    				'</a>'+
 	                    				'</li>'+
 	                    			'</ul>'+
 	                    			'</li>';
                     			$('#tree-clients-jobs > ul').append(html);
                     		} else {
                     			html = 
-                    				'<li  data-id="'+rdata.job.id+'" data-name="'+rdata.job.name+'">'+
+                    				'<li data-id="'+rdata.job.id+'" data-name="'+rdata.job.name+'">'+
                     				'<a href="javascript:void(0)"><i class="fa fa-chevron-circle-right"></i>'+
                     				rdata.job.name
-                    				'</a>'+
                     	            '<span class="pull-right-container">'+
-                    	            '<i class="fa fa-angle-left pull-right"></i>'+
+                    	            '<i class="fa fa-asterisk pull-right"></i>'+
                     	            '</span>'+
-                    				'</li>'+
+                    				'</a>'+
+                    				'</li>';
                     				
-                    			$($(li)+' > ul').append(html);
+                    			$('> ul',$(li)).append(html);
+                    			//展开
+                    			$(li).addClass('menu-open').css('display','block');
+                    			$('>ul',$(li)).css('display','block');
                     		}
                     			
+                    		console.log("appended html = "+html);
                         	$('#input-search-clients-jobs').hideseek();
                         	layer.close(lyIdx);
                             //dataTable.fnDraw(false);
@@ -386,7 +392,7 @@ $(function () {
     				'All Clients </a></li>';
     		}
     		for (var i=0; i<len; i++){
-    			li += '<li data-id="'+rdata[i].id+'" data-name="'+rdata[i].name+'">'+
+    			li += '<li class="treeview" data-id="'+rdata[i].id+'" data-name="'+rdata[i].name+'">'+
     			'<a href="javascript:void(0)"><i class="fa fa-chevron-circle-right"></i>'+
     			rdata[i].name+
     			'</a>'+
@@ -406,6 +412,7 @@ $(function () {
     	}
     });
     
+    
     //add clients
     $(".choseUserBelong ul li").on("click",function(){
     	
@@ -423,6 +430,48 @@ $(function () {
     	console.log("li selected:"+$(this).parent());
     });
     
+    /**
+     * client（客户）树形列表展开事件
+     */
+    $('#tree-clients-jobs').on('click','ul li i.fa',function(){
+    	
+    	var clientId = $(this).closest('li').first().data("id");
+    	var uiJobs = $(this).parent().siblings('ul').first();
+    	
+    	if ($(this).hasClass('fa-chevron-circle-right')){
+    		$(this).removeClass('fa-chevron-circle-right').addClass('fa-chevron-circle-down');
+    		if (uiJobs == null || $(uiJobs).children('li').length == 0){
+    			$.post(base_url + "/tasks/job/all",{"clientId":clientId},function(data,status){
+    				if (data.code == 200){
+    					var rdata = data.data;
+    					var ul = $('#tree-clients-jobs > ul > li[data-id="'+clientId+'"]').children('ul').first();
+    					var li = '';
+    					for (var i=0; i<rdata.length; i++){
+    		    			li += 
+                				'<li data-id="'+rdata[i].id+'" data-name="'+rdata[i].name+'">'+
+                				'<a href="javascript:void(0)"><i class="fa fa-chevron-circle-right"></i>'+
+                				rdata[i].name +
+                	            '<span class="pull-right-container">'+
+                	            '<i class="fa fa-asterisk pull-right"></i>'+
+                	            '</span>'+
+                				'</a>'+
+                				'</li>';
+    		    		}
+    		    		console.log('jobs of client["'+clientId+'"]='+li);
+    		    		console.log('ul ["'+clientId+'"]='+$(ul));
+    		        	$(ul).append(li);
+    		        	$('#input-search-clients-jobs').hideseek();    					
+    				} else {
+    					layer.msg(data.msg || "Get Job Failed", {icon: 1});
+    					console.log(data.msg || "Get Job Failed");
+    				}
+    			});    			
+    		}
+    	} else {
+    		$(this).removeClass('fa-chevron-circle-down').addClass('fa-chevron-circle-right');
+    	}
+    });
+
  
     $('#clients-jobs-addnew li a').on('click',function(){
     	switch($(this).parent('li').index()){

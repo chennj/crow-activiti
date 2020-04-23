@@ -207,6 +207,41 @@ public class TasksController extends BaseController{
     	}
     }
     
+    @RequestMapping("/job/all")
+    @ResponseBody
+    public ReturnT<JSONArray> getJobByClientId(
+    		@RequestParam(required = true) String clientId){
+    	
+    	//valid
+    	if (clientId == null || clientId.trim().length() == 0){
+    		logger.error("tasks/job/all>>>clientId is empty");
+    		return new ReturnT<>(ReturnT.FAIL_CODE, "Lost Client ID");
+    	}
+    	
+    	try{
+    		JSONArray jResult = new JSONArray();
+	    	List<RuJob> list = ruJobService.getList("businessKey", clientId);
+	    	for (RuJob one : list){
+	    		jResult.add(new JSONObject(){
+	    			/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+					{
+	    				this.put("id", one.getId());
+	    				this.put("name", one.getName());
+	    			}
+	    		});
+	    	}
+	    	logger.info("tasks/job/all.result>>>"+jResult.toString());
+	    	return new ReturnT<JSONArray>(jResult); 
+    	} catch (Exception e){
+    		logger.error("tasks/job/all>>>",e);
+    		return new ReturnT<>(ReturnT.FAIL_CODE, e.getMessage());
+    	}
+    }
+    
     @RequestMapping("/getClients")
     @ResponseBody
     public ReturnT<JSONObject> getClients(

@@ -36,6 +36,20 @@ public abstract class AbstractBaseService<T> {
 		return baseDao.get(id);
 	}
 	
+	public List<T> getList(String key,String value){
+		Map<String, Object> eq = new HashMap<String, Object>(){
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			{
+				this.put(key, value);
+			}
+		};
+		return baseDao.findList("", eq, null, null, null, null, null, null, null, null, null, null);
+	}
+	
 	public T getUnique(String key, String value){
 		
 		HashMap<String, Object> eq = new HashMap<>();
