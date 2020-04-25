@@ -387,7 +387,7 @@ $(function () {
     		console.log("data:"+JSON.stringify(rdata));
     		var len = rdata.length;
     		if (len>0){
-    			li += '<li data-id="allclients data-name="allclients">'+
+    			li += '<li data-id="allclients" data-name="allclients">'+
     				'<a href="javascript:void(0)"><i class="fa fa-chevron-circle-right"></i>'+
     				'All Clients </a></li>';
     		}
@@ -480,9 +480,10 @@ $(function () {
     			type: 1,
     			title: 'Create New Client',
     			closeBtn: 1,
-    			area:['50%','90%'],
-    			shadeClose: true,
+    			area:['60%','90%'],
+    			shadeClose: false,
     			skin: 'layui-layer-rim',
+    			anim: 1,
     			content: $('#modal-addnew-client')
     			});
     		break;
@@ -492,11 +493,24 @@ $(function () {
     			type: 1,
     			title: 'Add new job',
     			closeBtn: 1,
-    			area:['50%','90%'],
-    			shadeClose: true,
+    			area:['60%','90%'],
+    			shadeClose: false,
     			skin: 'layui-layer-rim',
+    			anim: 4,
     			content: $('#modal-addnew-job')
     			});
+    		break;
+    	case 4:
+    		lyIdx = layer.open({
+    			type: 1,
+    			title: 'Create New Tasks',
+    			closeBtn: 1,
+    			area:['60%','90%'],
+    			shadeClose: false,
+    			skin: 'demo-class',
+    			anim: 3,
+    			content: $('#modal-addnew-task')
+    		});
     		break;
     	default:
     		break;
@@ -504,62 +518,44 @@ $(function () {
     });
 
     /**
-     * 新增客户layer里面的select2的设置
+     * 初始化一些组件
+     * 提示框,check box, date picker,...
      */
+    
+    /* -----------------------select2----------------------------*/
+    //新增客户(client)layer里面的select2的设置
     $('#modal-addnew-client .select2').select2({dropdownParent:$("#modal-addnew-job")});
 
-    /**
-     * 新增工作layer里面的select2的设置
-     */
+    //新增工作(job)layer里面的select2的设置
     function iniJobLayerSelect2(){
-    	var iniData=[];
     	
-		$("#tree-clients-jobs ul li").each(function(){
+    	var clientSelect = $('#modal-addnew-job .select2[name="businessKey"]').first();
+    	
+    	/**
+    	 * 给select2设置默认值
+    	 */
+    	//step 1:
+    	var iniData=[];    	
+		var selectedValue;
+		$("#tree-clients-jobs > ul > li").each(function(){
+			if ($(this).data("id")=="allclients"){
+				return;
+			}
+			if ($(this).hasClass("selected")){
+				selectedValue = $(this).data("id");
+				console.log("当前选择的【客户，客户ID】=【"+$(this).data("name")+","+selectedValue+"】");
+			}	
 			iniData.push({id:$(this).data("id"),text:$(this).data("name")});
 		});
+		console.log("新增Job的select2初始化数据[inidata]:"+JSON.stringify(iniData));
 		
-		console.log("job-layer select2 ini data:"+JSON.stringify(iniData));
-    	
-    	$('#modal-addnew-job .select2').select2({
+		//step 2:
+    	clientSelect.select2({
 	    	dropdownParent:$("#modal-addnew-job"),
 	    	placeholder: "-- Please Select Client to Add Job for --",
 	    	minimumInputLength: 1,　　						//最小查询参数
 	    	multiple: false,								//多选设置
 	    	data: iniData,									//初始化数据
-	    	//current: function (element, callback){		//默认显示option的项
-	    		/*
-	    		var id = $(element).val();
-	            if (id !== "") {
-	                $.ajax("https://api.github.com/repositories/" + id, {
-	                    dataType: "json"
-	                }).done(function(data) { callback(data); });
-	            }
-	            */
-	    		/*
-	    		if ($("#tree-clients-jobs ul li").hasClass("selected")){
-		    		var client = $("#tree-clients-jobs ul li.selected").eq(0);
-		    		var defaultClient = {id:$(client).data("id"),text:$(client).data("name")};
-		    		callback(defaultClient);
-	    		}
-	    		*/
-	    		/*
-	    		var data = [];
-	            var currentVal = this.$element.val();
-
-	            if (!this.$element.prop('multiple')) {
-	                currentVal = [currentVal];
-	            }
-
-	            for (var v = 0; v < currentVal.length; v++) {
-	                data.push({
-	                    id: currentVal[v],
-	                    text: currentVal[v]
-	                });
-	            }
-	            console.log("#modal-addnew-job .select2 current mothed:"+JSON.stringify(data));
-	            callback(data);
-	            */
-	    	//},
 	    	ajax: {
 	    		url: base_url + "/tasks/getClients",
 	    		dataType: "json",
@@ -567,7 +563,7 @@ $(function () {
 	    		quietMillis: 500,							//延时查询毫秒数
 	    		data: function (params) {
 	    			return {
-	    				sSearch: params.term,						//term为前台输入的查询关键字，保存到sSearch对象，
+	    				sSearch: params.term,				//term为前台输入的查询关键字，保存到sSearch对象，
 	    													//即后台保存关键字的对象
 	    				start: params.page || 1,
 	    				length: 20							//每次查询的结果数
@@ -591,8 +587,113 @@ $(function () {
 	    		}
 	    	}
 	    });
+    	
+    	//step 3:
+		if (selectedValue){
+			console.log("设置选择客户的默认值");
+			clientSelect.val([selectedValue]).trigger('change');
+		}
     }
     
+  //新增任务(task)layer里面的select2的设置
+    function iniTaskLayerSelect2(){
+    	
+    	/**
+    	 * 给job select2设置默认值
+    	 */
+    	
+    	
+    	/**
+    	 * 给client select2设置默认值
+    	 */
+    	var clientSelect = $('#modal-addnew-job .select2[name="choseClient"]').first();
+    	
+    	//step 1:
+    	var iniData=[];    	
+		var selectedValue;
+		$("#tree-clients-jobs > ul > li").each(function(){
+			if ($(this).data("id")=="allclients"){
+				return;
+			}
+			if ($(this).hasClass("selected")){
+				selectedValue = $(this).data("id");
+				console.log("当前选择的【客户，客户ID】=【"+$(this).data("name")+","+selectedValue+"】");
+			}	
+			iniData.push({id:$(this).data("id"),text:$(this).data("name")});
+		});
+		console.log("新增Job的select2初始化数据[inidata]:"+JSON.stringify(iniData));
+		
+		//step 2:
+    	clientSelect.select2({
+	    	dropdownParent:$("#modal-addnew-task"),
+	    	placeholder: "-- Please Select Client to Add Job for --",
+	    	minimumInputLength: 1,　　						//最小查询参数
+	    	multiple: false,								//多选设置
+	    	data: iniData,									//初始化数据
+	    	ajax: {
+	    		url: base_url + "/tasks/getClients",
+	    		dataType: "json",
+	    		type: "POST",
+	    		quietMillis: 500,							//延时查询毫秒数
+	    		data: function (params) {
+	    			return {
+	    				sSearch: params.term,				//term为前台输入的查询关键字，保存到sSearch对象，
+	    													//即后台保存关键字的对象
+	    				start: params.page || 1,
+	    				length: 20							//每次查询的结果数
+	    			};
+	    		},
+	    		processResults: function (data, page) {
+	    			var rdata = data.data.data;
+	    			console.log("#modal-addnew-job .select2 results mothed data:"+JSON.stringify(rdata)+",page:"+JSON.stringify(page));
+	    			var more = (page * 20) < rdata.recordsTotal;
+	    			return {
+	    				
+	    				results: $.map(rdata, function(item){//results结果集，rdata为后台返回的查询结果
+
+							return {
+								text: item.name,
+								id: item.id
+							}
+	    				}),
+	 	    			more: more
+	    			};
+	    		}
+	    	}
+	    });
+    	
+    	//step 3:
+		if (selectedValue){
+			console.log("设置选择客户的默认值");
+			clientSelect.val([selectedValue]).trigger('change');
+		}    	
+    }
+
+    /* ------------------------- tips -----------------------------*/
+    $(".layer-tip").on("hover",function(){
+    	layer.tip($(this).data("tip"),this);
+    })
+    
+    /* ------------------------- check box ------------------------*/
+    //Enable check and uncheck all functionality
+    $(".checkbox-toggle").on("click",function () {
+    	var clicks = $(this).data('clicks');
+    	if (clicks) {
+    		//Uncheck all checkboxes
+    		$(".table-addnew-tasks input[type='checkbox']").iCheck("uncheck");
+    		$(".fa", this).removeClass("fa-check-square-o").addClass('fa-square-o');
+    	} else {
+    		//Check all checkboxes
+    		$(".table-addnew-tasks input[type='checkbox']").iCheck("check");
+    		$(".fa", this).removeClass("fa-square-o").addClass('fa-check-square-o');
+    	}
+    	$(this).data("clicks", !clicks);
+    });
+    
+    /* ------------------------- datepicker ------------------------*/
+    $('.date input[type="text"]').datepicker({
+    	autoclose: true
+	});
 
 });
 

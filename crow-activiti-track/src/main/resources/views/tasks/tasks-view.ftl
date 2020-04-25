@@ -14,6 +14,10 @@
 	<link rel="stylesheet" href="${request.contextPath}/static/plugins/layer/theme/default/layer.css">
 	<!-- 弹出层 -->
 	<link rel="stylesheet" href="${request.contextPath}/static/adminlte/bower_components/select2/css/select2.min.css">
+	<!-- icheck -->
+	<link rel="stylesheet" href="${request.contextPath}/static/adminlte/plugins/iCheck/square/blue.css">
+	<!-- bootstrap datepicker -->
+	<link rel="stylesheet" href="${request.contextPath}/static/adminlte/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
 	<style>
 	.panel{
 		margin-bottom:0px;
@@ -38,6 +42,7 @@
 		padding-bottom:	0px;
 		}
 	*/
+	body .demo-class .layui-layer-title{background:#ccc; color:#fff; border: none;}
 	</style>
 	
 </head>
@@ -200,6 +205,11 @@
 <script src="${request.contextPath}/static/plugins/jquery/jquery.validate.min.js"></script>
 <!-- 即时搜索 -->
 <script src="${request.contextPath}/static/plugins/hideseek/jquery.hideseek.js"></script>
+<!-- icheck -->
+<script src="${request.contextPath}/static/adminlte/plugins/iCheck/icheck.min.js"></script>
+<!-- bootstrap datepicker -->
+<script src="${request.contextPath}/static/adminlte/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+
 <!-- tasks-view -->
 <script src="${request.contextPath}/static/js/tasks-view.js"></script>
 
@@ -351,7 +361,7 @@
 <!-- /.box-body -->
 
 <!-- 新增Job弹窗 -->
-<div class="box box-success modaloflayer" id="modal-addnew-job" style="display:none;">
+<div class="box box-success " id="modal-addnew-job" style="display:none;">
 <div class="col-md-12">
 	<form role="form">
 		<ul id="myTab" class="nav nav-tabs">
@@ -369,7 +379,8 @@
 				    </div>
 				    <div class="form-group">
 				        <label for="businessKey" class="control-label">Client:</label>
-			            <select class="form-control select2" style="width: 100%;" name="businessKey">
+			            <select class="form-control select2" style="width: 100%;" name="businessKey" >
+			            	<option></option>
 			            </select>
 				    </div>				        
 				    <div class="form-group">
@@ -552,4 +563,99 @@
 </div>
 <!-- /.box-body -->
 
+<!-- 新增Task弹窗 -->
+<div class="box box-success" id="modal-addnew-task" style="display:none;">
+<div class="col-md-12">
+	<form role="form">
+		<div class="row">
+		<div class="col-sm-12">
+			<h5 class="text-light-blue">Select Client and Job to Add Tasks for</h5>
+		    <div class="form-group">
+	            <select class="form-control select2" style="width: 100%;" name="choseClient" >
+	            	<option></option>
+	            </select>
+		    </div>
+		    <div class="form-group" style="position:relative;">
+		    	<span style="position:absolute; left:0.5%;top:-13px; height:33px;border-left: 1px solid gray;"></span>
+		    	<span style="position:absolute; left:0.5%;top:20px; width:9%; border-bottom: 1px solid gray;"></span>
+		    	<select class="form-control select2" name="procInstId" style="margin-left:10%;width:90%;" >
+	            	<option></option>
+	            </select>
+		    </div>
+		</div>
+		</div>
+		<div class="row">
+			<span class="col-sm-7">New Tasks</span>
+			<span class="col-sm-5 text-light-blue pull-right">Copy properties from existing tasks</span>
+		</div>
+		<div class="no-padding" style="height:300px;overflow-y:scroll;">
+		<table class="table table-hover table-addnew-tasks">
+		<thead>
+			<tr>
+			  <th width="40%">Task Name</th>
+			  <th width="15%">Estimate<i class="fa fa-info-circle layer-tip" data-tip="asdfasd"></i></th>
+			  <th width="20%">Deadline</th>
+			  <th width="15%">Type of Work</th>
+			  <th width="10%">
+			  	<button type="button" class="btn btn-default btn-sm checkbox-toggle"><i class="fa fa-square-o"></i>
+                </button>
+              </th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+		  	<td>
+			  	<div class="input-group input-group-sm">
+					<input type="text" name="taskName" class="form-control" placeholder="Enter Task Name">
+					<span class="input-group-btn">
+					  	<button type="button" class="btn btn-info btn-flat"><i class="fa fa-align-left"></i></button>
+					</span>			  	
+			  	</div>
+		  	</td>
+			<td>
+			  	<div class="input-group input-group-sm ">		  	
+					<input type="text" name="estimate" class="form-control" placeholder="no needed">		  	
+			  	</div>
+			</td>
+			<td>
+			  	<div class="input-group input-group-sm date">
+                  	<div class="input-group-addon">
+                    <i class="fa fa-calendar"></i>
+                  	</div>				  	
+					<input type="text" name="deadline" class="form-control" placeholder="set deadline">		  	
+			  	</div>
+			</td>
+			<td>
+			  	<div class="input-group input-group-sm">			  	
+					<input type="text" name="wokeType" class="form-control" value="Non-Billable">		  	
+			  	</div>
+			</td>
+			<td>
+				<div class="input-group">
+			  		<input type="checkbox">
+			  	</div>
+			</td>
+			</tr>
+		</tbody>
+		</table>
+		</div>
+		<div class="row">
+			<div class="col-sm-12">
+			<div class="btn-group">
+				<a href="javascript:;"><i class="fa fa-plus"></i> Add new row</a>
+				<a href="javascript:;">5 rows</a>
+				<a href="javascript:;">10 rows</a>
+			</div>
+			</div>
+		</div>
+	    <div class="form-group">
+	        <div class="col-sm-offset-3 col-sm-9">
+	            <button type="submit" class="btn btn-primary"><i class="fa fa-plus"></i> <span>Create Client</span></button>
+	            <button type="button" class="btn btn-default">Cancel</button>
+	        </div>
+	    </div>
+	</form>
+</div>
+</div>
+<!-- /.box-body -->
 </html>
