@@ -42,6 +42,7 @@
 		padding-bottom:	0px;
 		}
 	*/
+	.select2-job-position{margin-left:10%;width:90%;}
 	body .demo-class .layui-layer-title{background:#ccc; color:#fff; border: none;}
 	</style>
 	
@@ -578,9 +579,11 @@
 		    <div class="form-group" style="position:relative;">
 		    	<span style="position:absolute; left:0.5%;top:-13px; height:33px;border-left: 1px solid gray;"></span>
 		    	<span style="position:absolute; left:0.5%;top:20px; width:9%; border-bottom: 1px solid gray;"></span>
-		    	<select class="form-control select2" name="procInstId" style="margin-left:10%;width:90%;" >
+		    	<div class="select2-job-position">
+		    	<select class="form-control select2" name="procInstId" style="width:100%">
 	            	<option></option>
 	            </select>
+	            </div>
 		    </div>
 		</div>
 		</div>
@@ -588,7 +591,7 @@
 			<span class="col-sm-7">New Tasks</span>
 			<span class="col-sm-5 text-light-blue pull-right">Copy properties from existing tasks</span>
 		</div>
-		<div class="no-padding" style="height:300px;overflow-y:scroll;">
+		<div class="no-padding tabel-wrapper-scroll" style="height:auto;overflow-y:scroll;">
 		<table class="table table-hover table-addnew-tasks">
 		<thead>
 			<tr>
@@ -603,7 +606,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr>
+			<tr class="trDefault">
 		  	<td>
 			  	<div class="input-group input-group-sm">
 					<input type="text" name="taskName" class="form-control" placeholder="Enter Task Name">
@@ -632,14 +635,15 @@
 			</td>
 			<td>
 				<div class="input-group">
-			  		<input type="checkbox">
+			  		<input type="checkbox" class="flat-red">
+			  		<button class="btn btn-sm btn-flat delTr"><i class="fa fa-close"></i></button>
 			  	</div>
 			</td>
 			</tr>
 		</tbody>
 		</table>
 		</div>
-		<div class="row">
+		<div class="row addNewRow">
 			<div class="col-sm-12">
 			<div class="btn-group">
 				<a href="javascript:;"><i class="fa fa-plus"></i> Add new row</a>
@@ -656,6 +660,17 @@
 	    </div>
 	</form>
 </div>
+</div>
+
+<!-- 任务状态列表 -->
+<div class="box box-success" id="modal-addnew-task-status-list" style="display:none;">
+<button class="btn btn-sm btn-flat">list1</button>
+<button class="btn btn-sm btn-flat">list1</button>
+<button class="btn btn-sm btn-flat">list1</button>
+<button class="btn btn-sm btn-flat">list1</button>
+<button class="btn btn-sm btn-flat">list1</button>
+<button class="btn btn-sm btn-flat">list1</button>
+<button class="btn btn-sm btn-flat">list1</button>
 </div>
 <!-- /.box-body -->
 </html>

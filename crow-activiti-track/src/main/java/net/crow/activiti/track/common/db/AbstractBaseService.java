@@ -99,4 +99,9 @@ public abstract class AbstractBaseService<T> {
 		}
 		return baseDao.findPage(page, pageSize, null, null, null, like, null, null, null, null, null, null, null, null);
 	}
+	
+	public Page<T> pageEqLk(int page, int pageSize, Map<String, Object> eq, Map<String, Object> like){
+
+		return baseDao.findPage(page, pageSize, null, eq, null, like, null, null, null, null, null, null, null, null);
+	}
 }

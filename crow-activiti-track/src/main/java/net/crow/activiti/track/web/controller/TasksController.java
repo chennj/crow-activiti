@@ -170,18 +170,44 @@ public class TasksController extends BaseController{
     		HttpServletRequest request){
     	
     	String likeSearch = request.getParameter("sSearch");
+    	String clientId = request.getParameter("clientId");
     	Page<RuJob> page;
     	if (likeSearch == null || likeSearch.trim().length() == 0){
-    		page = ruJobService.page(start, length, null);
-    	} else {
-    		page = ruJobService.pageLk(start, length, new HashMap<String, Object>(){
+    		page = ruJobService.page(start, length, new HashMap<String, Object>(){
     			/**
 				 * 
 				 */
 				private static final long serialVersionUID = 1L;
 
-				{this.put("name", likeSearch);}
+				{this.put("businessKey", clientId);}
     		});
+    	} else {
+    		if (clientId == null || clientId.trim().length() == 0){
+	    		page = ruJobService.pageLk(start, length, new HashMap<String, Object>(){
+	    			/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+	
+					{this.put("name", likeSearch);}
+	    		});
+    		} else {
+    			page = ruJobService.pageEqLk(start, length, new HashMap<String, Object>(){
+	    			/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+	
+					{this.put("businessKey", clientId);}
+	    		}, new HashMap<String, Object>(){
+	    			/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+					{this.put("name", likeSearch);}
+	    		});
+    		}
     	}
     	try{
 	    
@@ -197,6 +223,7 @@ public class TasksController extends BaseController{
     		
     		jResult.put("recordsTotal", page.getTotal());
     		jResult.put("recordsFiltered", page.getTotal());
+    		jResult.put("params","{page:"+page.getPage()+"}");
     		jResult.put("data", jary);
 	    	
 	    	logger.info("tasks/getJobs.result>>>"+jResult.toString());
@@ -278,6 +305,7 @@ public class TasksController extends BaseController{
     		
     		jResult.put("recordsTotal", page.getTotal());
     		jResult.put("recordsFiltered", page.getTotal());
+    		jResult.put("params","{page:"+page.getPage()+"}");
     		jResult.put("data", jary);
 	    	
 	    	logger.info("tasks/getClietns.result>>>"+jResult.toString());
