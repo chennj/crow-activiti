@@ -588,6 +588,7 @@ $(function () {
     			area:['60%','95%'],
     			shadeClose: false,
     			skin: 'layui-layer-rim',
+    			move: false,
     			anim: 1,
     			content: $('#modal-addnew-client')
     			});
@@ -601,6 +602,7 @@ $(function () {
     			area:['60%','95%'],
     			shadeClose: false,
     			skin: 'layui-layer-rim',
+    			move: false,
     			anim: 4,
     			content: $('#modal-addnew-job')
     			});
@@ -619,6 +621,7 @@ $(function () {
     			area:['60%','95%'],
     			shadeClose: false,
     			skin: 'demo-class',
+    			move: false,
     			anim: 3,
     			content: $('#modal-addnew-task')
     		});
@@ -673,24 +676,79 @@ $(function () {
     });
     
     // work type list
-    $("#modal-addnew-task").on("click","input[name='wokeType']",function(){
-    	lyIdx = layer.open({
-    			type: 1,
-    			title: false,
-    			closeBtn: 0,
-    			area:['20%','40%'],
-    			shadeClose: false,
-    			skin: 'layui-layer-rim',
-    			anim: 1,
-    			content: $('#modal-addnew-task-status-list')
-    			});
-    })
-    
+    /*
+    $(document).on("click",":not(#modal-addnew-task-type-list,#modal-addnew-task input[name='wokeType'])",function(){
+    	$("#modal-addnew-task-type-list").hide();
+    });
+    $("#modal-addnew-task").on("click","#modal-addnew-task-type-list,input[name='wokeType']",function(event){
+    	$("#modal-addnew-task-type-list").css("display","block");
+    	event.stopPropagation();
+    });
+    */
+    var lyIdxOfTaskTypeList
+    var prevInputWokeType;
+    $("#modal-addnew-task").on("click","input[name='wokeType']",function(event){
+    	
+    	console.log((prevInputWokeType!==null)+","+(prevInputWokeType != undefined)+","+(prevInputWokeType == this));
+    	if (prevInputWokeType!=null && prevInputWokeType != undefined && prevInputWokeType == this){
+    		event.stopPropagation();
+    		return;
+    	}
+    	
+    	prevInputWokeType = this;
+    	
+    	if (lyIdxOfTaskTypeList != undefined && lyIdxOfTaskTypeList !== null){
+    		console.log("关闭layer");
+    		$("#layui-layer"+lyIdxOfTaskTypeList).hide(10);
+    	}
+    	
+    	var width = $(this).closest(".tabel-wrapper-scroll").outerWidth() * 2 / 5;
+    	var height = $(this).closest(".tabel-wrapper-scroll").outerHeight() + 50;
+    	var left = $(this).offset().left - width - 2;
+    	var top = $(this).closest(".tabel-wrapper-scroll").offset().top - 50;
+    	
+    	console.log("打开layer");
+    	if (lyIdxOfTaskTypeList != undefined && lyIdxOfTaskTypeList !== null){
+    		$("#layui-layer"+lyIdxOfTaskTypeList).show(10);
+    		event.stopPropagation();
+    		return;
+    	}
+    	lyIdxOfTaskTypeList = layer.open({
+			type: 1,
+			title:false,
+			closeBtn: 0,
+			offset:[top+'px',left+'px'],
+			area:[width+'px',height+'px'],
+			shadeClose: true,
+			shade: 0,
+			move: false,
+			skin: 'task-type-class',
+			content: $('#modal-addnew-task-type-list')
+			});
+    });
+    $(document).on("click",":not(#modal-addnew-task input[name='wokeType'])",function(e){
+    	
+    	if (lyIdxOfTaskTypeList != undefined && lyIdxOfTaskTypeList != null){
+	    	var layerHeight = $(".task-type-class").first().outerHeight();
+	    	var layerWidth 	= $(".task-type-class").first().outerWidth();
+	    	var layerLeft 	= $(".task-type-class").first().offset().left;
+	    	var layerTop 	= $(".task-type-class").first().offset().top;
+	    	//鼠标位置
+	    	var xx = e.pageX;
+	    	var yy = e.pageY;
+	    	
+	    	if (xx < layerLeft || yy < layerTop || xx > (layerLeft+layerWidth) || yy > (layerTop+layerHeight)){
+	    		layer.close(lyIdxOfTaskTypeList);
+	    		lyIdxOfTaskTypeList = null;
+	    		prevInputWokeType = null;
+	    	}
+    	}
+    	
+    });
     /**
      * 初始化一些组件
      * 提示框,check box, date picker,...
-     */
-    
+     */   
     /* -----------------------select2----------------------------*/
     //新增客户(client)layer里面的select2的设置
     $('#modal-addnew-client .select2').select2({dropdownParent:$("#modal-addnew-job")});

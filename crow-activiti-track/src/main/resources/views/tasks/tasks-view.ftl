@@ -44,6 +44,7 @@
 	*/
 	.select2-job-position{margin-left:10%;width:90%;}
 	body .demo-class .layui-layer-title{background:#ccc; color:#fff; border: none;}
+	body .task-type-class .layui-layer-title{background:#ccc; color:#fff; border: none;}
 	</style>
 	
 </head>
@@ -591,7 +592,7 @@
 			<span class="col-sm-7">New Tasks</span>
 			<span class="col-sm-5 text-light-blue pull-right">Copy properties from existing tasks</span>
 		</div>
-		<div class="no-padding tabel-wrapper-scroll" style="height:auto;overflow-y:scroll;">
+		<div class="no-padding tabel-wrapper-scroll" style="height:auto;overflow-y:scroll; ">
 		<table class="table table-hover table-addnew-tasks">
 		<thead>
 			<tr>
@@ -663,14 +664,29 @@
 </div>
 
 <!-- 任务状态列表 -->
-<div class="box box-success" id="modal-addnew-task-status-list" style="display:none;">
-<button class="btn btn-sm btn-flat">list1</button>
-<button class="btn btn-sm btn-flat">list1</button>
-<button class="btn btn-sm btn-flat">list1</button>
-<button class="btn btn-sm btn-flat">list1</button>
-<button class="btn btn-sm btn-flat">list1</button>
-<button class="btn btn-sm btn-flat">list1</button>
-<button class="btn btn-sm btn-flat">list1</button>
-</div>
-<!-- /.box-body -->
+<div 
+	class="panel panel-default" 
+	id="modal-addnew-task-type-list" 
+	style="display:none;">
+	<div class="panel-body">
+	<ul>
+		<li><a href="javascript:;" >Lorem ipsum dolor sit amet</a></li>
+		<li><a href="javascript:;" >Consectetur adipiscing elit</a></li>
+		<li><a href="javascript:;" >Integer molestie lorem at massa</a></li>
+		<li><a href="javascript:;" >Facilisis in pretium nisl aliquet</a></li>
+		<li><a href="javascript:;" >Nulla volutpat aliquam velit</a>
+		  <ul>
+		    <li><a href="javascript:;" >Phasellus iaculis neque</a></li>
+		    <li><a href="javascript:;" >Purus sodales ultricies</a></li>
+		    <li><a href="javascript:;" >Vestibulum laoreet porttitor sem</a></li>
+		    <li><a href="javascript:;" >Ac tristique libero volutpat at</a></li>
+		  </ul>
+		</li>
+		<li><a href="javascript:;" >Faucibus porta lacus fringilla vel</a></li>
+		<li><a href="javascript:;" >Aenean sit amet erat nunc</a></li>
+		<li><a href="javascript:;" >Eget porttitor lorem</a></li>
+	</ul>
+	</div>
+</div>		
+
 </html>

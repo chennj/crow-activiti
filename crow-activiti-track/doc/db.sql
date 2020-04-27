@@ -77,6 +77,7 @@ create table actt_ru_task(
 	estimate_  bigint COMMENT '预估时间',
 	spent_time_ bigint COMMENT '花费时间',
 	sys_status_id_ varchar(36) not null COMMENT '任务状态',
+	sys_type_id_ varchar(36) not null COMMENT '任务类型',
 	suspension_state_ int(11) COMMENT '暂停状态 1：激活 2：挂起',
 	tenant_id_ varchar(36),
 	tenant_name_ varchar(128),
@@ -110,6 +111,7 @@ create table actt_hi_taskinst(
 	estimate_  bigint COMMENT '预估时间',
 	spent_time_ bigint COMMENT '花费时间',
 	sys_status_id_ varchar(36) not null COMMENT '任务状态',
+	sys_type_id_ varchar(36) not null COMMENT '任务类型',
 	suspension_state_ int(11) COMMENT '暂停状态 1：激活 2：挂起',
 	delete_reason_ varchar(1000) COMMENT '删除理由',
 	crt_id_ varchar(36) COMMENT '建立人工号',
@@ -465,6 +467,25 @@ create table actt_re_tenant(
 	unique index actt_re_tenant_uni_idx_name(name_)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='租户表';
 
+drop table if exists actt_sys_type;
+create table actt_sys_type(
+	id_ varchar(36) NOT NULL COMMENT '主键',
+	parent_id_ varchar(36),
+	category_ varchar(128) not null COMMENT '分类,例如：task,process,client...',
+	name_ varchar(255) not null,
+	desc_ varchar(255),
+	status_ varchar(2) COMMENT '0:有效',
+	tenant_id_ varchar(36),
+	tenant_name_ varchar(128),
+	crt_id_ varchar(36) COMMENT '建立人工号',
+	upd_id_ varchar(36) COMMENT '修改人工号',
+	crt_time_ timestamp DEFAULT CURRENT_TIMESTAMP NULL COMMENT '创建时间', 
+	upd_time_ timestamp NULL COMMENT '更新时间', 
+	rev_ int COMMENT '版本号',
+	primary key (id_),
+	unique index actt_sys_type_uni_idx_name_tenant_parent(name_,tenant_id_,parent_id_)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统类型表';
+
 alter table actt_hi_procinst add constraint actt_fk_actt_ge_hi_procinst_buskey_id foreign key (business_key_) references actt_ge_client(id_);
 
 alter table	actt_id_belong_user_membership add constraint actt_fk_belong_user_membership_user foreign key actt_id_belong_user_membership(user_id_) references actt_id_user(id_);
@@ -506,3 +527,32 @@ INSERT INTO actt_sys_status_dict (id_,category_,type_,name_,flag_,tenant_id_,ten
 VALUE(REPLACE(uuid(),'-',''),'Client','Close','Finished','1','00dfbbfd802d11ea814654e1ad0a1f62','demo','demo','','2020-04-07 00:00:00','2020-04-07 00:00:00',1);
 INSERT INTO actt_sys_status_dict (id_,category_,type_,name_,flag_,tenant_id_,tenant_name_,crt_id_,upd_id_,crt_time_,upd_time_,rev_)
 VALUE(REPLACE(uuid(),'-',''),'Client','Close','Deleted','1','00dfbbfd802d11ea814654e1ad0a1f62','demo','demo','','2020-04-07 00:00:00','2020-04-07 00:00:00',1);
+
+INSERT INTO actt_sys_type (id_,category_,name_,status_,tenant_id_,tenant_name_,crt_id_,upd_id_,crt_time_,upd_time_,rev_)
+VALUE('fe9a20ce883511eabba454e1ad0a1f62','Task','NON-BILLABLE','0','00dfbbfd802d11ea814654e1ad0a1f62','demo','demo','','2020-04-07 00:00:00','2020-04-07 00:00:00',1);
+INSERT INTO actt_sys_type (id_,parent_id_,category_,name_,status_,tenant_id_,tenant_name_,crt_id_,upd_id_,crt_time_,upd_time_,rev_)
+VALUE(REPLACE(uuid(),'-',''),'fe9a20ce883511eabba454e1ad0a1f62','Task','Non-Billable','0','00dfbbfd802d11ea814654e1ad0a1f62','demo','demo','','2020-04-07 00:00:00','2020-04-07 00:00:00',1);
+INSERT INTO actt_sys_type (id_,parent_id_,category_,name_,status_,tenant_id_,tenant_name_,crt_id_,upd_id_,crt_time_,upd_time_,rev_)
+VALUE(REPLACE(uuid(),'-',''),'fe9a20ce883511eabba454e1ad0a1f62','Task','OTHER ACCOUTING SERVICES','0','00dfbbfd802d11ea814654e1ad0a1f62','demo','demo','','2020-04-07 00:00:00','2020-04-07 00:00:00',1);
+INSERT INTO actt_sys_type (id_,category_,name_,status_,tenant_id_,tenant_name_,crt_id_,upd_id_,crt_time_,upd_time_,rev_)
+VALUE('cbd84d09883611eabba454e1ad0a1f62','Task','BILLABLE','0','00dfbbfd802d11ea814654e1ad0a1f62','demo','demo','','2020-04-07 00:00:00','2020-04-07 00:00:00',1);
+INSERT INTO actt_sys_type (id_,parent_id_,category_,name_,status_,tenant_id_,tenant_name_,crt_id_,upd_id_,crt_time_,upd_time_,rev_)
+VALUE(REPLACE(uuid(),'-',''),'cbd84d09883611eabba454e1ad0a1f62','Task','FINANCIAL STATEMENTS PREPARATION','0','00dfbbfd802d11ea814654e1ad0a1f62','demo','demo','','2020-04-07 00:00:00','2020-04-07 00:00:00',1);
+INSERT INTO actt_sys_type (id_,parent_id_,category_,name_,status_,tenant_id_,tenant_name_,crt_id_,upd_id_,crt_time_,upd_time_,rev_)
+VALUE(REPLACE(uuid(),'-',''),'cbd84d09883611eabba454e1ad0a1f62','Task','ADVISORY & PLANNING','0','00dfbbfd802d11ea814654e1ad0a1f62','demo','demo','','2020-04-07 00:00:00','2020-04-07 00:00:00',1);
+INSERT INTO actt_sys_type (id_,parent_id_,category_,name_,status_,tenant_id_,tenant_name_,crt_id_,upd_id_,crt_time_,upd_time_,rev_)
+VALUE(REPLACE(uuid(),'-',''),'cbd84d09883611eabba454e1ad0a1f62','Task','ADMIN & ADMIN SUPPORTING','0','00dfbbfd802d11ea814654e1ad0a1f62','demo','demo','','2020-04-07 00:00:00','2020-04-07 00:00:00',1);
+INSERT INTO actt_sys_type (id_,parent_id_,category_,name_,status_,tenant_id_,tenant_name_,crt_id_,upd_id_,crt_time_,upd_time_,rev_)
+VALUE(REPLACE(uuid(),'-',''),'cbd84d09883611eabba454e1ad0a1f62','Task','AUDIT ASSISTANCE','0','00dfbbfd802d11ea814654e1ad0a1f62','demo','demo','','2020-04-07 00:00:00','2020-04-07 00:00:00',1);
+INSERT INTO actt_sys_type (id_,parent_id_,category_,name_,status_,tenant_id_,tenant_name_,crt_id_,upd_id_,crt_time_,upd_time_,rev_)
+VALUE(REPLACE(uuid(),'-',''),'cbd84d09883611eabba454e1ad0a1f62','Task','AUDIT REPRESENTATION','0','00dfbbfd802d11ea814654e1ad0a1f62','demo','demo','','2020-04-07 00:00:00','2020-04-07 00:00:00',1);
+INSERT INTO actt_sys_type (id_,parent_id_,category_,name_,status_,tenant_id_,tenant_name_,crt_id_,upd_id_,crt_time_,upd_time_,rev_)
+VALUE(REPLACE(uuid(),'-',''),'cbd84d09883611eabba454e1ad0a1f62','Task','BOOKKEEPING','0','00dfbbfd802d11ea814654e1ad0a1f62','demo','demo','','2020-04-07 00:00:00','2020-04-07 00:00:00',1);
+INSERT INTO actt_sys_type (id_,parent_id_,category_,name_,status_,tenant_id_,tenant_name_,crt_id_,upd_id_,crt_time_,upd_time_,rev_)
+VALUE(REPLACE(uuid(),'-',''),'cbd84d09883611eabba454e1ad0a1f62','Task','QUICKBOOKS TRAINING','0','00dfbbfd802d11ea814654e1ad0a1f62','demo','demo','','2020-04-07 00:00:00','2020-04-07 00:00:00',1);
+INSERT INTO actt_sys_type (id_,parent_id_,category_,name_,status_,tenant_id_,tenant_name_,crt_id_,upd_id_,crt_time_,upd_time_,rev_)
+VALUE(REPLACE(uuid(),'-',''),'cbd84d09883611eabba454e1ad0a1f62','Task','QUICKBOOKS CLEANING','0','00dfbbfd802d11ea814654e1ad0a1f62','demo','demo','','2020-04-07 00:00:00','2020-04-07 00:00:00',1);
+INSERT INTO actt_sys_type (id_,parent_id_,category_,name_,status_,tenant_id_,tenant_name_,crt_id_,upd_id_,crt_time_,upd_time_,rev_)
+VALUE(REPLACE(uuid(),'-',''),'cbd84d09883611eabba454e1ad0a1f62','Task','DIRECTOR/MANAGER/OFFICER/OFFICER SUPPORTING','0','00dfbbfd802d11ea814654e1ad0a1f62','demo','demo','','2020-04-07 00:00:00','2020-04-07 00:00:00',1);
+INSERT INTO actt_sys_type (id_,parent_id_,category_,name_,status_,tenant_id_,tenant_name_,crt_id_,upd_id_,crt_time_,upd_time_,rev_)
+VALUE(REPLACE(uuid(),'-',''),'cbd84d09883611eabba454e1ad0a1f62','Task','PAYROLL SERVICE','0','00dfbbfd802d11ea814654e1ad0a1f62','demo','demo','','2020-04-07 00:00:00','2020-04-07 00:00:00',1);
