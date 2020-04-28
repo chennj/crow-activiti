@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -227,7 +228,9 @@ public abstract class AbstractBaseDao<T> implements BaseDao<T> {
  
     /*-----------------------------extends tool------------------------------------*/
     
-    protected T get(String id){
+    private final static int BATCH_SIZE = 20;
+    
+    public T get(String id){
     	return (T)em.getReference(clazz, id);
     }
     
@@ -457,5 +460,38 @@ public abstract class AbstractBaseDao<T> implements BaseDao<T> {
 		page.setResults(list);
 
 		return page;
-	}	
+	}
+	
+	public void batchInsert(List<T> list){
+		
+		int size = list.size();
+		em.setFlushMode(FlushModeType.COMMIT);
+		em.getTransaction().begin();
+		for (int i=0; i<size; i++){
+			em.persist(list.get(i));
+			if (i % BATCH_SIZE == 0 && i > 0){
+				em.flush();
+				em.clear();
+			}
+		}
+		em.getTransaction().commit();
+		em.close();
+	}
+	
+	public void batchUpdate(List<T> list){
+		
+		int size = list.size();
+		em.setFlushMode(FlushModeType.COMMIT);
+		em.getTransaction().begin();
+		for (int i=0; i<size; i++){
+			T t = em.merge(list.get(i));
+			em.persist(t);
+			if (i % BATCH_SIZE == 0 && i > 0) {
+                em.flush();
+                em.clear();
+            }
+		}
+		em.getTransaction().commit();
+        em.close();
+	}
 }

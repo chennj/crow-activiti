@@ -27,13 +27,13 @@ public class RuTask {
 	@Column(name = "id_",length=32) 
 	private String id;
 
-	@Column(name = "proc_inst_id_",length=32) 
+	@Column(name = "proc_inst_id_",length=36) 
 	private String procInstId;
 
 	@Column(name = "name_") 
 	private String name;
 
-	@Column(name = "parent_task_id_",length=32) 
+	@Column(name = "parent_task_id_",length=36) 
 	private String parentTaskId;
 
 	@Column(name = "desc_") 
@@ -75,13 +75,16 @@ public class RuTask {
 	@Column(name = "overdue_date_") 
 	private Timestamp overdueDate;
 	
-	@Column(name = "sys_status_id_",length=32)
+	@Column(name = "sys_status_id_",length=36)
 	private String sysStatusId;
+	
+	@Column(name = "sys_type_id_", length=36)
+	private String sysTypeId;
 	
 	@Column(name = "suspension_state_") 
 	private Integer suspensionState;
 
-	@Column(name = "tenant_id_",length=32)
+	@Column(name = "tenant_id_",length=36)
 	private String tenantId;
 	@Column(name = "tenant_name_")
 	private String tenantName;
@@ -206,6 +209,12 @@ public class RuTask {
 	}
 	public void setSysStatusId(String sysStatusId) {
 		this.sysStatusId = sysStatusId;
+	}
+	public String getSysTypeId() {
+		return sysTypeId;
+	}
+	public void setSysTypeId(String sysTypeId) {
+		this.sysTypeId = sysTypeId;
 	}
 	public Integer getSuspensionState() {
 		return suspensionState;

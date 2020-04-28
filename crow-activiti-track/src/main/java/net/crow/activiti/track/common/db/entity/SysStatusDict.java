@@ -23,7 +23,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class SysStatusDict {
 
 	@Id @GeneratedValue(generator = "jpa-uuid2")
-	@Column(name = "id_",length=32) 
+	@Column(name = "id_",length=36) 
 	private String id;
 
 	@Column(name = "category_")
@@ -44,7 +44,7 @@ public class SysStatusDict {
 	@Column(name = "flag_")
 	private String flag;
 
-	@Column(name = "tenant_id_",length=32)
+	@Column(name = "tenant_id_",length=36)
 	private String tenantId;
 	@Column(name = "tenant_name_")
 	private String tenantName;

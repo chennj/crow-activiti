@@ -475,6 +475,7 @@ create table actt_sys_type(
 	name_ varchar(255) not null,
 	desc_ varchar(255),
 	status_ varchar(2) COMMENT '0:有效',
+	flag_ varchar(2) default '1' COMMENT '标记：表示缺省等',
 	tenant_id_ varchar(36),
 	tenant_name_ varchar(128),
 	crt_id_ varchar(36) COMMENT '建立人工号',
@@ -530,8 +531,8 @@ VALUE(REPLACE(uuid(),'-',''),'Client','Close','Deleted','1','00dfbbfd802d11ea814
 
 INSERT INTO actt_sys_type (id_,category_,name_,status_,tenant_id_,tenant_name_,crt_id_,upd_id_,crt_time_,upd_time_,rev_)
 VALUE('fe9a20ce883511eabba454e1ad0a1f62','Task','NON-BILLABLE','0','00dfbbfd802d11ea814654e1ad0a1f62','demo','demo','','2020-04-07 00:00:00','2020-04-07 00:00:00',1);
-INSERT INTO actt_sys_type (id_,parent_id_,category_,name_,status_,tenant_id_,tenant_name_,crt_id_,upd_id_,crt_time_,upd_time_,rev_)
-VALUE(REPLACE(uuid(),'-',''),'fe9a20ce883511eabba454e1ad0a1f62','Task','Non-Billable','0','00dfbbfd802d11ea814654e1ad0a1f62','demo','demo','','2020-04-07 00:00:00','2020-04-07 00:00:00',1);
+INSERT INTO actt_sys_type (id_,parent_id_,category_,name_,status_,flag_,tenant_id_,tenant_name_,crt_id_,upd_id_,crt_time_,upd_time_,rev_)
+VALUE(REPLACE(uuid(),'-',''),'fe9a20ce883511eabba454e1ad0a1f62','Task','Non-Billable','0','0','00dfbbfd802d11ea814654e1ad0a1f62','demo','demo','','2020-04-07 00:00:00','2020-04-07 00:00:00',1);
 INSERT INTO actt_sys_type (id_,parent_id_,category_,name_,status_,tenant_id_,tenant_name_,crt_id_,upd_id_,crt_time_,upd_time_,rev_)
 VALUE(REPLACE(uuid(),'-',''),'fe9a20ce883511eabba454e1ad0a1f62','Task','OTHER ACCOUTING SERVICES','0','00dfbbfd802d11ea814654e1ad0a1f62','demo','demo','','2020-04-07 00:00:00','2020-04-07 00:00:00',1);
 INSERT INTO actt_sys_type (id_,category_,name_,status_,tenant_id_,tenant_name_,crt_id_,upd_id_,crt_time_,upd_time_,rev_)

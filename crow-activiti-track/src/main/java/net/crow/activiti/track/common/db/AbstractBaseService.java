@@ -104,4 +104,12 @@ public abstract class AbstractBaseService<T> {
 
 		return baseDao.findPage(page, pageSize, null, eq, null, like, null, null, null, null, null, null, null, null);
 	}
+	
+	public void addList(List<T> list) throws Exception{
+		baseDao.batchInsert(list);
+	}
+	
+	public void modifyList(List<T> list){
+		baseDao.batchUpdate(list);
+	}
 }

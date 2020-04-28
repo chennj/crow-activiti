@@ -16,7 +16,7 @@ import org.hibernate.annotations.GenericGenerator;
 public class ReTenant{
 	
 	@Id @GeneratedValue(generator = "jpa-uuid2")
-	@Column(name = "id_",length=32) 
+	@Column(name = "id_",length=36) 
 	private String id;
 
 	@Column(name = "name_")

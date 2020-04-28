@@ -1,5 +1,6 @@
 package net.crow.activiti.track.web.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,10 +25,12 @@ import net.crow.activiti.track.common.db.entity.GeClient;
 import net.crow.activiti.track.common.db.entity.RuJob;
 import net.crow.activiti.track.common.db.entity.RuTask;
 import net.crow.activiti.track.common.db.entity.SysStatusDict;
+import net.crow.activiti.track.common.db.entity.SysType;
 import net.crow.activiti.track.common.db.service.GeClientService;
 import net.crow.activiti.track.common.db.service.RuJobService;
 import net.crow.activiti.track.common.db.service.RuTaskService;
 import net.crow.activiti.track.common.db.service.SysStatusDictService;
+import net.crow.activiti.track.common.db.service.SysTypeService;
 
 @Controller
 @RequestMapping("tasks")
@@ -45,6 +48,9 @@ public class TasksController extends BaseController{
 	@Autowired
 	SysStatusDictService sStatusService;
 	
+	@Autowired
+	SysTypeService sTypeService;
+	
 	@RequestMapping("")
 	public String tasksView(Model model, HttpServletRequest request){
 		
@@ -54,6 +60,11 @@ public class TasksController extends BaseController{
 		return "tasks/tasks-view";
 	}
 
+	/**
+	 * 新增客户
+	 * @param geClient
+	 * @return
+	 */
     @RequestMapping("/add/client")
     @ResponseBody
     public ReturnT<JSONObject> addClient(GeClient geClient){
@@ -99,6 +110,65 @@ public class TasksController extends BaseController{
     	}
     }
 
+    /**
+     * 分页查询客户
+     * @param start
+     * @param length
+     * @param request
+     * @return
+     */
+    @RequestMapping("/getClients")
+    @ResponseBody
+    public ReturnT<JSONObject> getClients(
+    		@RequestParam(required = false, defaultValue = "0") int start,
+    		@RequestParam(required = false, defaultValue = "100") int length,
+    		HttpServletRequest request){
+    	
+    	String likeSearch = request.getParameter("sSearch");
+    	logger.info("task/getClients>>>search str:"+likeSearch);
+    	Page<GeClient> page;
+    	if (likeSearch == null || likeSearch.trim().length() == 0){
+    		page = geClientService.page(start, length, null);
+    	} else {
+    		page = geClientService.pageLk(start, length, new HashMap<String, Object>(){
+    			/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+				{this.put("name", likeSearch);}
+    		});
+    	}
+    	try{
+	    
+    		JSONObject jResult	= new JSONObject();
+    		JSONArray jary 		= new JSONArray();
+    		
+    		for (GeClient one : page.results){
+    			JSONObject tmpJo = new JSONObject();
+    			tmpJo.put("id", one.getId());
+    			tmpJo.put("name", one.getName());
+    			jary.add(tmpJo);
+    		}
+    		
+    		jResult.put("recordsTotal", page.getTotal());
+    		jResult.put("recordsFiltered", page.getTotal());
+    		jResult.put("params","{page:"+page.getPage()+"}");
+    		jResult.put("data", jary);
+	    	
+	    	logger.info("tasks/getClietns.result>>>"+jResult.toString());
+	    	return new ReturnT<JSONObject>(jResult); 
+    	} catch(Exception e){
+    		logger.error("tasks/getClients>>>",e);
+    		return new ReturnT<>(ReturnT.FAIL_CODE, e.getMessage());
+    	}
+    }
+    
+    /**
+     * 新增工作
+     * @param ruJob
+     * @return
+     */
     @RequestMapping("/add/job")
     @ResponseBody
     public ReturnT<JSONObject> addJob(RuJob ruJob){
@@ -162,6 +232,13 @@ public class TasksController extends BaseController{
     	}
     }
 
+    /**
+     * 分页查询工作
+     * @param start
+     * @param length
+     * @param request
+     * @return
+     */
     @RequestMapping("/getJobs")
     @ResponseBody
     public ReturnT<JSONObject> getJobs(
@@ -233,7 +310,12 @@ public class TasksController extends BaseController{
     		return new ReturnT<>(ReturnT.FAIL_CODE, e.getMessage());
     	}
     }
-    
+
+    /**
+     * 根据客户id，查询所有工作
+     * @param clientId
+     * @return
+     */
     @RequestMapping("/job/all")
     @ResponseBody
     public ReturnT<JSONArray> getJobByClientId(
@@ -269,49 +351,86 @@ public class TasksController extends BaseController{
     	}
     }
     
-    @RequestMapping("/getClients")
-    @ResponseBody
-    public ReturnT<JSONObject> getClients(
-    		@RequestParam(required = false, defaultValue = "0") int start,
-    		@RequestParam(required = false, defaultValue = "100") int length,
-    		HttpServletRequest request){
+    /**
+     * 新增多个任务
+     * @param tasks
+     * @return
+     */
+    @RequestMapping("/add/tasks")
+    public ReturnT<String> addTasks(
+    		@RequestParam(required = true) String tasks){
     	
-    	String likeSearch = request.getParameter("sSearch");
-    	logger.info("getClients>>>search str:"+likeSearch);
-    	Page<GeClient> page;
-    	if (likeSearch == null || likeSearch.trim().length() == 0){
-    		page = geClientService.page(start, length, null);
-    	} else {
-    		page = geClientService.pageLk(start, length, new HashMap<String, Object>(){
-    			/**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
-
-				{this.put("name", likeSearch);}
-    		});
-    	}
-    	try{
-	    
-    		JSONObject jResult	= new JSONObject();
-    		JSONArray jary 		= new JSONArray();
-    		
-    		for (GeClient one : page.results){
-    			JSONObject tmpJo = new JSONObject();
-    			tmpJo.put("id", one.getId());
-    			tmpJo.put("name", one.getName());
-    			jary.add(tmpJo);
-    		}
-    		
-    		jResult.put("recordsTotal", page.getTotal());
-    		jResult.put("recordsFiltered", page.getTotal());
-    		jResult.put("params","{page:"+page.getPage()+"}");
-    		jResult.put("data", jary);
+    	logger.info("tasks/add/tasks>>>receive json string:"+tasks);
+    	
+    	List<RuTask> list = new ArrayList<>();
+    	
+    	try {
+	    	JSONArray jaryTask = JSONArray.parseArray(tasks);
 	    	
-	    	logger.info("tasks/getClietns.result>>>"+jResult.toString());
-	    	return new ReturnT<JSONObject>(jResult); 
-    	} catch(Exception e){
-    		logger.error("tasks/getClients>>>",e);
+	    	for(int i=0; i<jaryTask.size(); i++){
+	    		RuTask entity = JSON.toJavaObject(jaryTask.getJSONObject(i), RuTask.class);
+	    		list.add(entity);
+	    	}
+	    	ruTaskService.addList(list);
+	    	return new ReturnT<>("Add Operator SUCCESS");
+    	} catch (Exception e){
+    		logger.error("tasks/add/tasks>>>",e);
+    		return new ReturnT<>(ReturnT.FAIL_CODE, e.getMessage());
+    	}
+    	
+    }
+
+    /**
+     * 分页查询任务
+     * @param start
+     * @param length
+     * @param jobId
+     * @return
+     */
+    @RequestMapping("/getTasks")
+    @ResponseBody
+    public String taskPage(
+    		@RequestParam(required = false, defaultValue = "0") int start,
+    		@RequestParam(required = false, defaultValue = "20") int length,
+    		String jobId){
+    	
+    	if (jobId == null || jobId.trim().length() == 0){
+    		JSONObject result = new JSONObject();
+    		result.put("recordsTotal", 0);
+    		result.put("recordsFiltered", 0);
+    		result.put("data", new JSONArray());
+    		return result.toJSONString();
+    	}
+    	
+    	Map<String, Object> eq = new HashMap<>();
+    	eq.put("sysStatusId", jobId);
+        Page<RuTask> page = ruTaskService.page(start, length, eq);
+        return page.toJsonString();
+    }
+    
+    /**
+     * 获取任务的所有类型
+     * @param request
+     * @return
+     */
+    @RequestMapping("/getTaskType")
+    @ResponseBody
+    public ReturnT<JSONArray> getTaskTypes(HttpServletRequest request){
+    	
+    	JSONArray jary = new JSONArray();
+    	
+    	List<SysType> list = sTypeService.getList("category", "Task");
+    	try {
+    		for (SysType one : list){
+    			JSONObject jo = new JSONObject();
+    			jo.put("id", one.getId());
+    			jo.put("name", one.getName());
+    			jo.put("isdefault", "0".equals(one.getFlag().trim()));
+    			jary.add(jo);
+    		}
+    		return new ReturnT<JSONArray>(jary); 
+    	} catch (Exception e){
+    		logger.error("tasks/getUserBelong>>>",e);
     		return new ReturnT<>(ReturnT.FAIL_CODE, e.getMessage());
     	}
     }
@@ -331,30 +450,11 @@ public class TasksController extends BaseController{
 	    	
 	    	return new ReturnT<JSONArray>(jary); 
     	} catch(Exception e){
-    		logger.error("tasks/getClients>>>",e);
+    		logger.error("tasks/getUserBelong>>>",e);
     		return new ReturnT<>(ReturnT.FAIL_CODE, e.getMessage());
     	}
     }
     
-    @RequestMapping("/taskPage")
-    @ResponseBody
-    public String taskPage(
-    		@RequestParam(required = false, defaultValue = "0") int start,
-    		@RequestParam(required = false, defaultValue = "10") int length,
-    		String jobId){
-    	
-    	if (jobId == null || jobId.trim().length() == 0){
-    		JSONObject result = new JSONObject();
-    		result.put("recordsTotal", 0);
-    		result.put("recordsFiltered", 0);
-    		result.put("data", new JSONArray());
-    		return result.toJSONString();
-    	}
-    	
-    	Map<String, Object> eq = new HashMap<>();
-    	eq.put("sysStatusId", jobId);
-        Page<RuTask> page = ruTaskService.page(start, length, eq);
-        return page.toJsonString();
-    }
+
 
 }

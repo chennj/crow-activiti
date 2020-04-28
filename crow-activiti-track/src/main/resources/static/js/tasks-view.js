@@ -3,6 +3,57 @@
  */
 $(function () {
 		
+	var layerPrefix = "layui-layer";
+	
+	
+	/**
+	 * 页面加载时，需要初始化的数据
+	 */
+	$.post(base_url + "/tasks/add/getTaskType", function(data, status) {
+		if (data.code == "200") {
+			var rdata = data.data;
+			console.log("data:"+JSON.stringify(rdata));
+			var len = rdata.length;
+			var li="";
+			
+		} else {
+			
+		}
+	};
+	
+    //加载左边客户列表（client）
+    $.post(base_url + "/tasks/getClients", function(data,status){
+    	if (data.code == "200") {
+    		var li = "";
+    		var rdata = data.data.data;
+    		console.log("data:"+JSON.stringify(rdata));
+    		var len = rdata.length;
+    		if (len>0){
+    			li += '<li data-id="allclients" data-name="allclients">'+
+    				'<a href="javascript:void(0)"><i class="fa fa-chevron-circle-right"></i>'+
+    				'All Clients </a></li>';
+    		}
+    		for (var i=0; i<len; i++){
+    			li += '<li class="treeview" data-id="'+rdata[i].id+'" data-name="'+rdata[i].name+'" data-type="client">'+
+    			'<a href="javascript:void(0)"><i class="fa fa-chevron-circle-right"></i>'+
+    			rdata[i].name+
+    			'</a>'+
+    			'<ul class="treeview-menu"></ul>'+
+    			'</li>';
+    		}
+    		console.log("左边客户列表："+li);
+        	$('#tree-clients-jobs ul').append(li);
+        	$('#input-search-clients-jobs').hideseek();
+    	} else {
+    		layer.open({
+                title: "System Prompt",
+                btn: [ "Confirm" ],
+                content: (data.msg || "Create Failed" ),
+                icon: '2'
+            });
+    	}
+    });
+	
     /**
      * 左边treeview高度设置，计算它的高度使其能撑满屏幕
      */
@@ -127,18 +178,21 @@ $(function () {
      */
     // 计算data table高度
     var tableOffsetTop = $('#tasks-list').offset().top;
-    var tableMargin = 189;
+    var tableMargin = 1;
     var tableHeight = bodyHeight - tableOffsetTop - footerHeight - tableMargin;
+    
+    $('#tasks-list').parent().css("height",tableHeight+"px");
+    
     console.log("$('#tasks-list').offset().top="+tableOffsetTop);
     console.log("tableHeight="+tableHeight);
     //初始化DataTable
 	var dataTable = $("#data_list").dataTable({
-		"deferRender": true,
-		"processing" : true, 
-	    "serverSide": true,
-	    "scrollY": "calc(100vh - 377px)",
-		"ajax": {
-			url: base_url + "/tasks/taskPage",
+		deferRender: true,
+		processing : true, 
+	    serverSide: true,
+	    scrollY: "calc(100vh - 377px)",
+		ajax: {
+			url: base_url + "/tasks/getTasks",
 	        data : function ( d ) {
 				var obj = {};
 				obj.start = d.start;
@@ -147,10 +201,10 @@ $(function () {
 				return obj;
             }
 	    },
-	    "searching": false,
-	    "ordering": false,
-	    //"scrollX": true,	// X轴滚动条，取消自适应
-	    "columns": [
+	    searching: false,
+	    ordering: false,
+
+	    columns: [
 	                { data: 'id', bSortable: false,visible:false},
 	                { data: 'name'},
 					{ data: 'sysStatusId'},
@@ -160,7 +214,7 @@ $(function () {
 	                { data: 'lastTrackingDate'},
 	                { data: 'createTime'}
 	            ],
-		"language" : {
+		language : {
 			"sProcessing" : "working hard...",
 			"sUrl" : "",
 			"sEmptyTable" : "not data",
@@ -294,7 +348,7 @@ $(function () {
                     				'<li class="treeview menu-open" '+
                     				'data-id="'+rdata.client.id+'" '+
                     				'data-name="'+rdata.client.name+'" '+
-                    				'data-thype="client" style="display:block;">'+
+                    				'data-type="client" style="display:block;">'+
 	                    			'<a href="javascript:void(0)"><i class="fa fa-chevron-circle-right"></i>'+
 	                    			rdata.client.name+
 	                    			'</a>'+
@@ -373,66 +427,62 @@ $(function () {
 			element.parent('div').append(error);
 		},
 		submitHandler : function(form) {
-			//alert("debug.add.client");
-			$.post(base_url + "/tasks/add/job", $("#modal-addnew-job form").serialize(), function(data, status) {
+			
+			//组装提交的数据
+			var submitData = [];
+			
+			var procInstId = $('select[name="procInstId"]:first')val();
+			if (procInstId==null || procInstId.trim().length() == 0){
+				layer.msg("Please one job", {icon: 2});
+				return;
+			}
+			var trs = $("#modal-addnew-task form table tbody tr");
+			if (!trs){
+				layer.msg(data.msg || "Data Table Is EMPTY", {icon: 1});
+				return;
+			};
+			for (var i=0; i<trs.length; i++){
+				var td = $(this).children('td');
+				var isChk = $('input[type="checkbox]:first',td).prop('checked');
+				if (!isChk){
+					continue;
+				}
+				var itemJson = {}
+				itemJson['procInstId'] 	= procInstId;
+				itemJson['name'] 		= $('input[type=text]:first',$(td).eq(0)).val();
+				itemJson['desc'] 		= $('textarea:first',$(td).eq(0)).val();
+				itemJson['estimate'] 	= $('input[type=text]:first',$(td).eq(1)).val();
+				itemJson['deadline'] 	= $('input[type=text]:first',$(td).eq(2)).val();
+				itemJson['sysTypeId'] 	= $('input[type=text]:first',$(td).eq(3)).val();
+				
+				if (itemJson['name']==null || itemJson['name'].trim().length() == 0){
+					layer.msg(i+"th row task name is empty", {icon: 2});
+					return;
+				}
+				submitData.push(itemJson);
+			}
+			
+			if (submitData.length == 0){
+				layer.msg("Select one row AT LEAST", {icon: 2});
+				return;
+			}
+			
+			console.log("add new task submit data:"+JSON.stringify(submitData));
+			
+			$.post(base_url + "/tasks/add/tasks", {tasks:JSON.stringify(submitData)}, function(data, status) {
 				if (data.code == "200") {
 					
 					//刷新数据列表
 					taskDataTable.fnDraw();
 					
-                    layer.open({
-                        title: "System Prompt",
-                        btn: [ "Confirm" ],
-                        content: "Create Success" ,
-                        icon: '1',
-                        end: function(layero, index){
-                        	var rdata = data.data;
-                        	var html;
-                        	console.log('li.selected = #tree-clients-jobs > ul > li[data-id="'+rdata.businessKey+'"]');
-                    		var li = $('#tree-clients-jobs > ul > li[data-id="'+rdata.businessKey+'"]');
-                    		if (li == null){
-                    			html = 
-                    				'<li class="treeview menu-open" '+
-                    				'data-id="'+rdata.client.id+'" '+
-                    				'data-name="'+rdata.client.name+'" '+
-                    				'data-thype="client" style="display:block;">'+
-	                    			'<a href="javascript:void(0)"><i class="fa fa-chevron-circle-right"></i>'+
-	                    			rdata.client.name+
-	                    			'</a>'+
-	                    			'<ul class="treeview-menu" style="display:block;">'+
-	                    				'<li data-id="'+rdata.job.id+'" data-name="'+rdata.job.name+'" data-type="job">'+
-	                    				'<a href="javascript:void(0)"><i class="fa fa-chevron-circle-right"></i>'+
-	                    				rdata.job.name
-	                    	            '<span class="pull-right-container">'+
-	                    	            '<i class="fa fa-asterisk pull-right"></i>'+
-	                    	            '</span>'+
-	                    				'</a>'+
-	                    				'</li>'+
-	                    			'</ul>'+
-	                    			'</li>';
-                    			$('#tree-clients-jobs > ul').append(html);
-                    		} else {
-                    			html = 
-                    				'<li data-id="'+rdata.job.id+'" data-name="'+rdata.job.name+'" data-type="job">'+
-                    				'<a href="javascript:void(0)"><i class="fa fa-chevron-circle-right"></i>'+
-                    				rdata.job.name
-                    	            '<span class="pull-right-container">'+
-                    	            '<i class="fa fa-asterisk pull-right"></i>'+
-                    	            '</span>'+
-                    				'</a>'+
-                    				'</li>';
-                    				
-                    			$('> ul',$(li)).append(html);
-                    			//展开
-                    			$(li).addClass('menu-open').css('display','block');
-                    			$('>ul',$(li)).css('display','block');
-                    		}
-                    			
-                    		console.log("appended html = "+html);
-                        	$('#input-search-clients-jobs').hideseek();
-                        	layer.close(lyIdx);
-                            //dataTable.fnDraw(false);
-                        }
+					layer.msg(data.msg || "Operator complete", {icon: 2});
+					
+                	if (lyIdxOfTaskTypeList != undefined && lyIdxOfTaskTypeList !== null){
+                		layer.close(lyIdxOfTaskTypeList);
+                		lyIdxOfTaskTypeList = null;
+                	}
+                	layer.close(lyIdx);
+
                     });
 				} else {
                     layer.open({
@@ -445,40 +495,6 @@ $(function () {
 			});
 		}
 	});    
-    
-    //加载clients
-    $.post(base_url + "/tasks/getClients", function(data,status){
-    	if (data.code == "200") {
-    		var li = "";
-    		var rdata = data.data.data;
-    		console.log("data:"+JSON.stringify(rdata));
-    		var len = rdata.length;
-    		if (len>0){
-    			li += '<li data-id="allclients" data-name="allclients">'+
-    				'<a href="javascript:void(0)"><i class="fa fa-chevron-circle-right"></i>'+
-    				'All Clients </a></li>';
-    		}
-    		for (var i=0; i<len; i++){
-    			li += '<li class="treeview" data-id="'+rdata[i].id+'" data-name="'+rdata[i].name+'" data-type="client">'+
-    			'<a href="javascript:void(0)"><i class="fa fa-chevron-circle-right"></i>'+
-    			rdata[i].name+
-    			'</a>'+
-    			'<ul class="treeview-menu"></ul>'+
-    			'</li>';
-    		}
-    		console.log("左边客户列表："+li);
-        	$('#tree-clients-jobs ul').append(li);
-        	$('#input-search-clients-jobs').hideseek();
-    	} else {
-    		layer.open({
-                title: "System Prompt",
-                btn: [ "Confirm" ],
-                content: (data.msg || "Create Failed" ),
-                icon: '2'
-            });
-    	}
-    });
-    
     
     //add clients
     $(".choseUserBelong ul li").on("click",function(){
@@ -609,11 +625,7 @@ $(function () {
     		break;
     	case 4:
     		iniTaskLayerSelect2();
-    		
-    		var windowHeight = $(document.body).innerHeight();
-    		console.log('窗体内框高度：'+windowHeight);
-    		$('.tabel-wrapper-scroll').css("height",(windowHeight * 0.5) + "px");
-    		
+    		   		
     		lyIdx = layer.open({
     			type: 1,
     			title: 'Create New Tasks',
@@ -625,6 +637,10 @@ $(function () {
     			anim: 3,
     			content: $('#modal-addnew-task')
     		});
+    		
+    		var layerHeight = $("#"+layerPrefix+lyIdx).innerHeight();
+    		console.log('弹框内框高度：'+layerHeight);
+    		$('.tabel-wrapper-scroll').css("height",(layerHeight - 250) + "px");
     		
     		break;
     	default:
@@ -699,7 +715,7 @@ $(function () {
     	
     	if (lyIdxOfTaskTypeList != undefined && lyIdxOfTaskTypeList !== null){
     		console.log("关闭layer");
-    		$("#layui-layer"+lyIdxOfTaskTypeList).hide(10);
+    		$("#"+layerPrefix+lyIdxOfTaskTypeList).hide(10);
     	}
     	
     	var width = $(this).closest(".tabel-wrapper-scroll").outerWidth() * 2 / 5;
@@ -707,9 +723,13 @@ $(function () {
     	var left = $(this).offset().left - width - 2;
     	var top = $(this).closest(".tabel-wrapper-scroll").offset().top - 50;
     	
+    	$("#modal-addnew-task-type-list ul li a[data-typename='demo']")
+    			.css("color","white")
+    			.parent().css({"background-color":"#3c8dbc"});
+    	
     	console.log("打开layer");
     	if (lyIdxOfTaskTypeList != undefined && lyIdxOfTaskTypeList !== null){
-    		$("#layui-layer"+lyIdxOfTaskTypeList).show(10);
+    		$("#"+layerPrefix+lyIdxOfTaskTypeList).show(10);
     		event.stopPropagation();
     		return;
     	}
@@ -745,6 +765,17 @@ $(function () {
     	}
     	
     });
+    $("#modal-addnew-task-type-list").on("click","ul li a", function(e){
+    	
+    	if (prevInputWokeType!=null && prevInputWokeType != undefined && prevInputWokeType == this){
+    		event.stopPropagation();
+    		return;
+    	}
+    	
+    	$(prevInputWokeType).val($(this).text());
+    	$("#"+layerPrefix+lyIdxOfTaskTypeList).hide(10);
+    });
+    
     /**
      * 初始化一些组件
      * 提示框,check box, date picker,...

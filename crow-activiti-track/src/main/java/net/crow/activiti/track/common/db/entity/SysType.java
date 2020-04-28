@@ -16,56 +16,33 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-/**
- * 
- * spring data jpa能自动区分出来insert 和 update 能自动填上时间，狠省心啊
- * @EntityListeners
- * @CreatedDate 		//创建时间
- * @LastModifiedDate 	//更新时间
- * @CreatedBy()  
- * @LastModifiedBy()
- * @author chenn
- *
- */
 @Entity
-@Table(name="actt_ge_client",catalog="acti_time")
+@Table(name="actt_sys_type",catalog="acti_time")
 @GenericGenerator(name = "jpa-uuid2", strategy = "org.hibernate.id.UUIDGenerator" )
 @EntityListeners(AuditingEntityListener.class)
-public class GeClient{
-	
+public class SysType {
+
 	@Id @GeneratedValue(generator = "jpa-uuid2")
 	@Column(name = "id_",length=36) 
 	private String id;
 
-	@Column(name = "name_")
+	@Column(name = "parent_id_", length=36)
+	private String parentId;
+	
+	@Column(name = "category_", length=36)
+	private String category;
+	
+	@Column(name = "name_", length=36)
 	private String name;
 	
-	@Column(name = "addr_")
-	private String addr;
-	
-	@Column(name = "state_")
-	private String state;
-
-	@Column(name = "province_")
-	private String province;
-
-	@Column(name = "phone_")
-	private String phone;
-
-	@Column(name = "mobile_")
-	private String mobile;
-
-	@Column(name = "email_")
-	private String email;
-
-	@Column(name = "desc_")
+	@Column(name = "desc_", length=36)
 	private String desc;
-
-	@Column(name = "proc_inst_id_",length=36)
-	private String procInstId;
 	
-	@Column(name = "sys_status_id_",length=36)
-	private String sysStatusId;	
+	@Column(name = "status_", length=36)
+	private String status;
+	
+	@Column(name = "flag_")
+	private String flag;
 
 	@Column(name = "tenant_id_",length=36)
 	private String tenantId;
@@ -82,15 +59,26 @@ public class GeClient{
 	private Timestamp crtTime;	
 	@Column(name = "upd_time_")
 	@LastModifiedDate
-	private Timestamp updTime;	
+	private Timestamp updTime;
 	@Column(name = "rev_")
 	private int rev = 1;
-	
 	public String getId() {
 		return id;
 	}
 	public void setId(String id) {
 		this.id = id;
+	}
+	public String getParentId() {
+		return parentId;
+	}
+	public void setParentId(String parentId) {
+		this.parentId = parentId;
+	}
+	public String getCategory() {
+		return category;
+	}
+	public void setCategory(String category) {
+		this.category = category;
 	}
 	public String getName() {
 		return name;
@@ -98,59 +86,23 @@ public class GeClient{
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getAddr() {
-		return addr;
-	}
-	public void setAddr(String addr) {
-		this.addr = addr;
-	}
-	public String getState() {
-		return state;
-	}
-	public void setState(String state) {
-		this.state = state;
-	}
-	public String getProvince() {
-		return province;
-	}
-	public void setProvince(String province) {
-		this.province = province;
-	}
-	public String getPhone() {
-		return phone;
-	}
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-	public String getMobile() {
-		return mobile;
-	}
-	public void setMobile(String mobile) {
-		this.mobile = mobile;
-	}
-	public String getEmail() {
-		return email;
-	}
-	public void setEmail(String email) {
-		this.email = email;
-	}
 	public String getDesc() {
 		return desc;
 	}
 	public void setDesc(String desc) {
 		this.desc = desc;
 	}
-	public String getProcInstId() {
-		return procInstId;
+	public String getStatus() {
+		return status;
 	}
-	public void setProcInstId(String procInstId) {
-		this.procInstId = procInstId;
+	public void setStatus(String status) {
+		this.status = status;
 	}
-	public String getSysStatusId() {
-		return sysStatusId;
+	public String getFlag() {
+		return flag;
 	}
-	public void setSysStatusId(String sysStatusId) {
-		this.sysStatusId = sysStatusId;
+	public void setFlag(String flag) {
+		this.flag = flag;
 	}
 	public String getTenantId() {
 		return tenantId;
@@ -193,5 +145,5 @@ public class GeClient{
 	}
 	public void setRev(int rev) {
 		this.rev = rev;
-	}	
+	}
 }

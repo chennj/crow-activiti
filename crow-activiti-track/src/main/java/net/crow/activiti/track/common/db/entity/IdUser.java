@@ -23,7 +23,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class IdUser {
 
 	@Id @GeneratedValue(generator = "jpa-uuid2")
-	@Column(name = "id_",length=32) 
+	@Column(name = "id_",length=36) 
 	private String id;
 	
 	@Column(name = "first_") 

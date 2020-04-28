@@ -27,7 +27,7 @@ public class RuJob{
 	@Column(name = "id_") 
 	private String id;
 	
-	@Column(name = "parent_proc_inst_id_",length=32) 
+	@Column(name = "parent_proc_inst_id_",length=36) 
 	private String parentId;
 
 	@Column(name = "name_") 
@@ -45,16 +45,16 @@ public class RuJob{
 	@Column(name = "duration_") 
 	private BigInteger duration;
 
-	@Column(name = "sys_status_id_",length=32) 
+	@Column(name = "sys_status_id_",length=36) 
 	private String sysStatusId;
 
-	@Column(name = "start_user_no_",length=32) 
+	@Column(name = "start_user_no_",length=36) 
 	private String startUserNo;
 
-	@Column(name = "end_user_no_",length=32) 
+	@Column(name = "end_user_no_",length=36) 
 	private String endUserNo;
 
-	@Column(name = "start_act_id_",length=32) 
+	@Column(name = "start_act_id_",length=36) 
 	private String startActId;
 
 	@Column(name = "end_act_id_",length=32) 

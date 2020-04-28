@@ -9,7 +9,8 @@
     <!-- bootstrap-treeview -->
     <link rel="stylesheet" href="${request.contextPath}/static/adminlte/plugins/bootstrap-treeview/bootstrap-treeview.css">
 	<!-- datatables -->
-	<link rel="stylesheet" href="${request.contextPath}/static/adminlte/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
+	<!-- link rel="stylesheet" href="${request.contextPath}/static/adminlte/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css"-->
+	<link rel="stylesheet" href="${request.contextPath}/static/plugins/datatables/datatables.min.css">
 	<!-- select2 -->
 	<link rel="stylesheet" href="${request.contextPath}/static/plugins/layer/theme/default/layer.css">
 	<!-- 弹出层 -->
@@ -159,7 +160,7 @@
                 		<div class="panel panel-default">
                 		<div class="panel-body">
                 		
-						 <table id="tasks-list" class="table table-bordered table-striped">
+						 <table id="tasks-list" class="table table-bordered table-striped" >
 						 <thead>
 						  	<tr>
 							    <th name="name">Task</th>
@@ -197,8 +198,11 @@
 <!-- 滚动条 -->
 <script src="${request.contextPath}/static/adminlte/bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
 <!-- datatables -->
+<!--
 <script src="${request.contextPath}/static/adminlte/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
 <script src="${request.contextPath}/static/adminlte/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+-->
+<script src="${request.contextPath}/static/plugins/datatables/datatables.min.js"></script>
 <!-- 弹出层 -->
 <script src="${request.contextPath}/static/plugins/layer/layer.js"></script>
 <!-- select2 -->
@@ -610,9 +614,12 @@
 			<tr class="trDefault">
 		  	<td>
 			  	<div class="input-group input-group-sm">
-					<input type="text" name="taskName" class="form-control" placeholder="Enter Task Name">
+					<input type="text" name="name" class="form-control" placeholder="Enter Task Name">
 					<span class="input-group-btn">
-					  	<button type="button" class="btn btn-info btn-flat"><i class="fa fa-align-left"></i></button>
+					  	<button type="button" class="btn btn-info btn-flat dropdown-toggle" data-toggle="dropdown"><i class="fa fa-align-left"></i></button>
+					  	<ul class="dropdown-menu" role="menu">
+						    <li><textarea rows="6" cols="30" name="desc"></textarea></li>
+					  	</ul>					  	
 					</span>			  	
 			  	</div>
 		  	</td>
@@ -631,13 +638,14 @@
 			</td>
 			<td>
 			  	<div class="input-group input-group-sm">			  	
-					<input type="text" name="wokeType" class="form-control" value="Non-Billable">		  	
+					<input type="text" name="workType" class="form-control" value="">
+					<input type="hidden" name="sysTypeId" value="">		  	
 			  	</div>
 			</td>
 			<td>
 				<div class="input-group">
 			  		<input type="checkbox" class="flat-red">
-			  		<button class="btn btn-sm btn-flat delTr"><i class="fa fa-close"></i></button>
+			  		<a href="javascript:;" class="btn btn-flat delTr"><i class="fa fa-close"></i></a>
 			  	</div>
 			</td>
 			</tr>
@@ -654,7 +662,7 @@
 			</div>
 		</div>
 	    <div class="form-group">
-	        <div class="col-sm-offset-3 col-sm-9">
+	        <div class="col-sm-offset-4 col-sm-8">
 	            <button type="submit" class="btn btn-primary"><i class="fa fa-plus"></i> <span>Create Client</span></button>
 	            <button type="button" class="btn btn-default">Cancel</button>
 	        </div>
@@ -665,12 +673,10 @@
 
 <!-- 任务状态列表 -->
 <div 
-	class="panel panel-default" 
 	id="modal-addnew-task-type-list" 
 	style="display:none;">
-	<div class="panel-body">
 	<ul>
-		<li><a href="javascript:;" >Lorem ipsum dolor sit amet</a></li>
+		<li><a href="javascript:;" data-typeid="" data-typename="demo">Lorem ipsum dolor sit amet</a></li>
 		<li><a href="javascript:;" >Consectetur adipiscing elit</a></li>
 		<li><a href="javascript:;" >Integer molestie lorem at massa</a></li>
 		<li><a href="javascript:;" >Facilisis in pretium nisl aliquet</a></li>
@@ -686,7 +692,6 @@
 		<li><a href="javascript:;" >Aenean sit amet erat nunc</a></li>
 		<li><a href="javascript:;" >Eget porttitor lorem</a></li>
 	</ul>
-	</div>
 </div>		
 
 </html>
