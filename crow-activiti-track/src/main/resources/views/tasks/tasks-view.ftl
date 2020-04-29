@@ -28,13 +28,22 @@
 		/*background-color:rgb(235, 245, 255)!important;*/
 		background-color:#f3f5f9!important;
 	}
+	
+	#tree-clients-jobs > .nav ul {background-color:#f3f5f9;}
+	#tree-clients-jobs > .nav li a {color:black;}
+	#tree-clients-jobs > .nav li > ul {padding-left:0px;}
+	#tree-clients-jobs > .nav li > ul > li > a{padding-left:36px;}
 	#tree-clients-jobs > .nav > li > a:hover,
 	#tree-clients-jobs > .nav > li > a:active,
-	#tree-clients-jobs > .nav > li > a:focus {
+	#tree-clients-jobs > .nav > li > a:focus,
+	#tree-clients-jobs > .nav > li > ul > li > a:hover,
+	#tree-clients-jobs > .nav > li > ul > li > a:active,
+	#tree-clients-jobs > .nav > li > ul > li > a:focus {
 	  	color: white;
 	  	background:#3c8dbc;
 	}
-	.selected{
+	#tree-clients-jobs >.nav > li.selected,
+	#tree-clients-jobs >.nav > li > ul > li.selected{
 	  	background:gray;
 	}
 		
@@ -125,7 +134,7 @@
                 	
                 	<!-- 需要搜索的结果集 -->
                 	<div class="row">
-                		<div id="tree-clients-jobs">
+                		<div id="tree-clients-jobs" style="height:auto;overflow-y:auto;">
                 		<ul class="nav nav-pills nav-stacked clients-jobs-list" data-widget="tree">
                 		<!-- ul class="nav nav-pills nav-stacked clients-jobs-list"-->
                 		</ul>
@@ -638,8 +647,7 @@
 			</td>
 			<td>
 			  	<div class="input-group input-group-sm">			  	
-					<input type="text" name="workType" class="form-control" value="">
-					<input type="hidden" name="sysTypeId" value="">		  	
+					<input type="text" name="workType" class="form-control" data-systypeid="" value="">  	
 			  	</div>
 			</td>
 			<td>
@@ -675,23 +683,6 @@
 <div 
 	id="modal-addnew-task-type-list" 
 	style="display:none;">
-	<ul>
-		<li><a href="javascript:;" data-typeid="" data-typename="demo">Lorem ipsum dolor sit amet</a></li>
-		<li><a href="javascript:;" >Consectetur adipiscing elit</a></li>
-		<li><a href="javascript:;" >Integer molestie lorem at massa</a></li>
-		<li><a href="javascript:;" >Facilisis in pretium nisl aliquet</a></li>
-		<li><a href="javascript:;" >Nulla volutpat aliquam velit</a>
-		  <ul>
-		    <li><a href="javascript:;" >Phasellus iaculis neque</a></li>
-		    <li><a href="javascript:;" >Purus sodales ultricies</a></li>
-		    <li><a href="javascript:;" >Vestibulum laoreet porttitor sem</a></li>
-		    <li><a href="javascript:;" >Ac tristique libero volutpat at</a></li>
-		  </ul>
-		</li>
-		<li><a href="javascript:;" >Faucibus porta lacus fringilla vel</a></li>
-		<li><a href="javascript:;" >Aenean sit amet erat nunc</a></li>
-		<li><a href="javascript:;" >Eget porttitor lorem</a></li>
-	</ul>
 </div>		
 
 </html>

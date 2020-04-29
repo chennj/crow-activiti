@@ -9,17 +9,62 @@ $(function () {
 	/**
 	 * 页面加载时，需要初始化的数据
 	 */
-	$.post(base_url + "/tasks/add/getTaskType", function(data, status) {
+	$.post(base_url + "/tasks/getTaskType", function(data, status) {
+		
 		if (data.code == "200") {
 			var rdata = data.data;
 			console.log("data:"+JSON.stringify(rdata));
 			var len = rdata.length;
-			var li="";
+			if (len == 0){
+				return;
+			}
+			var defaultData;
 			
+			//获取缺省设置
+			for (var i=0; i<len; i++){
+				if (rdata[i].isdefault){
+					defaultData = rdata[i];
+					break;
+				}
+			}
+			
+			var ul = $('<ul></ul>');
+			var chdLiIdx = 0;
+			
+			//list to tree 两层 (无限级别类似)
+			rdata.forEach(element=>{
+				var parentId = element.parentId;
+				if (parentId == 0){
+					var liul = '<li><a href="javascript:;" data-pid="'+element.parentId+'" data-id="'+element.id+'" data-name="'+element.name+'">'+element.name+'</a><ul></ul></li>';
+					$(ul).append(liul);
+					rdata.forEach(ele=>{
+						if (ele.parentId == element.id){
+							var li = '<li><a href="javascript:;" data-pid="'+ele.parentId+'" data-id="'+ele.id+'" data-name="'+ele.name+'">'+ele.name+'</a></li>';
+							$(ul).children('li').eq(chdLiIdx).children('ul').append(li);
+							if (!element.children){
+								element.children = [];
+							}
+							element.children.push(ele);
+						}
+					});
+					chdLiIdx++;
+				}
+			});
+			
+			console.log("获取工作类型，过滤前："+JSON.stringify(rdata));
+			rdata = rdata.filter(ele=>ele.parentId === 0);
+			console.log("获取工作类型，过滤后："+JSON.stringify(rdata));
+			console.log("获取工作类型，html："+$(ul).html());
+			
+			$('#modal-addnew-task-type-list').append(ul);
+			
+			//设置新增任务弹窗中缺省任务的值
+			$("#modal-addnew-task input[name='workType']").val(defaultData.name);
+			$("#modal-addnew-task input[name='workType']").data("systypeid",defaultData.id);
 		} else {
-			
+			layer.msg(data.msg || "Initialize Work Type List Failed!",{icon: 2});
 		}
-	};
+	});
 	
     //加载左边客户列表（client）
     $.post(base_url + "/tasks/getClients", function(data,status){
@@ -162,10 +207,12 @@ $(function () {
     
     /**
      * 滚动条设置
+     * 暂时不用漂亮滚动条了，和其他的部件保持一致
      */
-    $('#tree-clients-jobs').slimScroll({
-    	height: treeHeight+'px'
-    });    
+    //$('#tree-clients-jobs').slimScroll({
+    //	height: treeHeight+'px'
+    //});   
+    $('#tree-clients-jobs').css("height",treeHeight+'px');
     $('#tree-clients-jobs').css("background-color","#f3f5f9");
     
     //即时搜索
@@ -186,7 +233,7 @@ $(function () {
     console.log("$('#tasks-list').offset().top="+tableOffsetTop);
     console.log("tableHeight="+tableHeight);
     //初始化DataTable
-	var dataTable = $("#data_list").dataTable({
+	var taskDataTable = $("#data_list").dataTable({
 		deferRender: true,
 		processing : true, 
 	    serverSide: true,
@@ -354,7 +401,7 @@ $(function () {
 	                    			'</a>'+
 	                    			'<ul class="treeview-menu" style="display:block;">'+
 	                    				'<li data-id="'+rdata.job.id+'" data-name="'+rdata.job.name+'" data-type="job">'+
-	                    				'<a href="javascript:void(0)"><i class="fa fa-chevron-circle-right"></i>'+
+	                    				'<a href="javascript:void(0)">'+
 	                    				rdata.job.name
 	                    	            '<span class="pull-right-container">'+
 	                    	            '<i class="fa fa-asterisk pull-right"></i>'+
@@ -367,7 +414,7 @@ $(function () {
                     		} else {
                     			html = 
                     				'<li data-id="'+rdata.job.id+'" data-name="'+rdata.job.name+'" data-type="job">'+
-                    				'<a href="javascript:void(0)"><i class="fa fa-chevron-circle-right"></i>'+
+                    				'<a href="javascript:void(0)">'+
                     				rdata.job.name
                     	            '<span class="pull-right-container">'+
                     	            '<i class="fa fa-asterisk pull-right"></i>'+
@@ -405,15 +452,13 @@ $(function () {
 		errorClass : 'help-block',
 		focusInvalid : true,
 		rules : {
-            name : {
-				required : true ,
-                rangelength:[4,255]
+			procInstId : {
+				required : true 
 			}
 		},
 		messages : {
-            name : {
-				required :'Please enter "Client Name".'  ,
-                rangelength: '[4~220]'
+			procInstId : {
+				required :'Please enter "Client Name".' 
 			}
 		},
 		highlight : function(element) {
@@ -431,8 +476,8 @@ $(function () {
 			//组装提交的数据
 			var submitData = [];
 			
-			var procInstId = $('select[name="procInstId"]:first')val();
-			if (procInstId==null || procInstId.trim().length() == 0){
+			var procInstId = $('select[name="procInstId"]:first').val();
+			if (procInstId==null || procInstId.trim().length == 0){
 				layer.msg("Please one job", {icon: 2});
 				return;
 			}
@@ -442,8 +487,8 @@ $(function () {
 				return;
 			};
 			for (var i=0; i<trs.length; i++){
-				var td = $(this).children('td');
-				var isChk = $('input[type="checkbox]:first',td).prop('checked');
+				var td = $(trs).children('td');
+				var isChk = $('input[type="checkbox"]:first',$(td)).prop('checked');
 				if (!isChk){
 					continue;
 				}
@@ -453,12 +498,18 @@ $(function () {
 				itemJson['desc'] 		= $('textarea:first',$(td).eq(0)).val();
 				itemJson['estimate'] 	= $('input[type=text]:first',$(td).eq(1)).val();
 				itemJson['deadline'] 	= $('input[type=text]:first',$(td).eq(2)).val();
-				itemJson['sysTypeId'] 	= $('input[type=text]:first',$(td).eq(3)).val();
+				itemJson['sysTypeId'] 	= $('input[type=text]:first',$(td).eq(3)).data("systypeid");
 				
-				if (itemJson['name']==null || itemJson['name'].trim().length() == 0){
+				if (itemJson['name']==null || itemJson['name'].trim().length == 0){
 					layer.msg(i+"th row task name is empty", {icon: 2});
 					return;
 				}
+				
+				if (itemJson['sysTypeId']==null || itemJson['sysTypeId'].trim().length == 0){
+					layer.msg(i+"th row work type is empty", {icon: 2});
+					return;
+				}
+				
 				submitData.push(itemJson);
 			}
 			
@@ -469,7 +520,7 @@ $(function () {
 			
 			console.log("add new task submit data:"+JSON.stringify(submitData));
 			
-			$.post(base_url + "/tasks/add/tasks", {tasks:JSON.stringify(submitData)}, function(data, status) {
+			$.post(base_url + "/tasks/add/batch", {tasks:JSON.stringify(submitData)}, function(data, status) {
 				if (data.code == "200") {
 					
 					//刷新数据列表
@@ -483,7 +534,6 @@ $(function () {
                 	}
                 	layer.close(lyIdx);
 
-                    });
 				} else {
                     layer.open({
                         title: "System Prompt",
@@ -511,8 +561,12 @@ $(function () {
 
     	$("#tree-clients-jobs ul li").removeClass("selected");
     	$(this).parent().addClass("selected");
-    	console.log("li selected:"+$(this).parent());
 
+    	var type = $(this).parent().data('type');
+    	if ('job' == type){
+    		return;
+    	}
+    	
     	var clientId = $(this).closest('li').first().data("id");
     	var uiJobs = $(this).siblings('ul').first();
     	var ifa = $(this).children("i.fa").first();
@@ -528,7 +582,7 @@ $(function () {
     					for (var i=0; i<rdata.length; i++){
     		    			li += 
                 				'<li data-id="'+rdata[i].id+'" data-name="'+rdata[i].name+'" data-type="job">'+
-                				'<a href="javascript:void(0)"><i class="fa fa-chevron-circle-right"></i>'+
+                				'<a href="javascript:void(0)">'+
                 				rdata[i].name +
                 	            '<span class="pull-right-container">'+
                 	            '<i class="fa fa-asterisk pull-right"></i>'+
@@ -659,6 +713,7 @@ $(function () {
     	switch ($(this).index()){
     	case 0:		//add new row
     		var tr1New = $(".trDefault").first().clone().removeClass("trDefault").addClass("trNew");
+    		$(tr1New).data("systypeid",$(".trDefault input[name='workType']:first").data('systypeid'));
     		$(tr1New).appendTo($(".trDefault").parent());
     		break;
     	case 1:		//add 5 row
@@ -693,37 +748,37 @@ $(function () {
     
     // work type list
     /*
-    $(document).on("click",":not(#modal-addnew-task-type-list,#modal-addnew-task input[name='wokeType'])",function(){
+    $(document).on("click",":not(#modal-addnew-task-type-list,#modal-addnew-task input[name='workType'])",function(){
     	$("#modal-addnew-task-type-list").hide();
     });
-    $("#modal-addnew-task").on("click","#modal-addnew-task-type-list,input[name='wokeType']",function(event){
+    $("#modal-addnew-task").on("click","#modal-addnew-task-type-list,input[name='workType']",function(event){
     	$("#modal-addnew-task-type-list").css("display","block");
     	event.stopPropagation();
     });
     */
     var lyIdxOfTaskTypeList
-    var prevInputWokeType;
-    $("#modal-addnew-task").on("click","input[name='wokeType']",function(event){
+    var prevInputWorkType;
+    $("#modal-addnew-task").on("click","input[name='workType']",function(event){
     	
-    	console.log((prevInputWokeType!==null)+","+(prevInputWokeType != undefined)+","+(prevInputWokeType == this));
-    	if (prevInputWokeType!=null && prevInputWokeType != undefined && prevInputWokeType == this){
+    	console.log((prevInputWorkType!==null)+","+(prevInputWorkType != undefined)+","+(prevInputWorkType == this));
+    	if (prevInputWorkType!=null && prevInputWorkType != undefined && prevInputWorkType == this){
     		event.stopPropagation();
     		return;
     	}
     	
-    	prevInputWokeType = this;
+    	prevInputWorkType = this;
     	
     	if (lyIdxOfTaskTypeList != undefined && lyIdxOfTaskTypeList !== null){
     		console.log("关闭layer");
     		$("#"+layerPrefix+lyIdxOfTaskTypeList).hide(10);
     	}
     	
-    	var width = $(this).closest(".tabel-wrapper-scroll").outerWidth() * 2 / 5;
-    	var height = $(this).closest(".tabel-wrapper-scroll").outerHeight() + 50;
-    	var left = $(this).offset().left - width - 2;
-    	var top = $(this).closest(".tabel-wrapper-scroll").offset().top - 50;
+    	var width 	= $(this).closest(".tabel-wrapper-scroll").outerWidth() * 2 / 5;
+    	var height 	= $(this).closest(".tabel-wrapper-scroll").outerHeight() + 50;
+    	var left 	= $(this).offset().left - width - 2;
+    	var top 	= $(this).closest(".tabel-wrapper-scroll").offset().top - 50;
     	
-    	$("#modal-addnew-task-type-list ul li a[data-typename='demo']")
+    	$("#modal-addnew-task-type-list ul li a[data-id='"+$(this).data("systypeid")+"']")
     			.css("color","white")
     			.parent().css({"background-color":"#3c8dbc"});
     	
@@ -746,7 +801,7 @@ $(function () {
 			content: $('#modal-addnew-task-type-list')
 			});
     });
-    $(document).on("click",":not(#modal-addnew-task input[name='wokeType'])",function(e){
+    $(document).on("click",":not(#modal-addnew-task input[name='workType'])",function(e){
     	
     	if (lyIdxOfTaskTypeList != undefined && lyIdxOfTaskTypeList != null){
 	    	var layerHeight = $(".task-type-class").first().outerHeight();
@@ -760,19 +815,21 @@ $(function () {
 	    	if (xx < layerLeft || yy < layerTop || xx > (layerLeft+layerWidth) || yy > (layerTop+layerHeight)){
 	    		layer.close(lyIdxOfTaskTypeList);
 	    		lyIdxOfTaskTypeList = null;
-	    		prevInputWokeType = null;
+	    		prevInputWorkType = null;
 	    	}
     	}
     	
     });
     $("#modal-addnew-task-type-list").on("click","ul li a", function(e){
     	
-    	if (prevInputWokeType!=null && prevInputWokeType != undefined && prevInputWokeType == this){
+    	if (prevInputWorkType!=null && prevInputWorkType != undefined && prevInputWorkType == this){
     		event.stopPropagation();
     		return;
     	}
     	
-    	$(prevInputWokeType).val($(this).text());
+    	$(prevInputWorkType).val($(this).text());
+    	$(prevInputWorkType).data('systypeid', $(this).data('systypeid'));
+    	prevInputWorkType = null;
     	$("#"+layerPrefix+lyIdxOfTaskTypeList).hide(10);
     });
     

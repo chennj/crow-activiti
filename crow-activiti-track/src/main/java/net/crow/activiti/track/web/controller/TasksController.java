@@ -33,7 +33,7 @@ import net.crow.activiti.track.common.db.service.SysStatusDictService;
 import net.crow.activiti.track.common.db.service.SysTypeService;
 
 @Controller
-@RequestMapping("tasks")
+@RequestMapping("/tasks")
 public class TasksController extends BaseController{
 
 	@Autowired
@@ -356,7 +356,8 @@ public class TasksController extends BaseController{
      * @param tasks
      * @return
      */
-    @RequestMapping("/add/tasks")
+    @RequestMapping("/add/batch")
+    @ResponseBody
     public ReturnT<String> addTasks(
     		@RequestParam(required = true) String tasks){
     	
@@ -365,10 +366,30 @@ public class TasksController extends BaseController{
     	List<RuTask> list = new ArrayList<>();
     	
     	try {
+    		Map<String,Object> eq = new HashMap<String,Object>(){
+    			/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+				{
+    				this.put("category", "Task");
+    				this.put("flag", "0");
+    			}
+    		};    		
+    		SysStatusDict defaultStatus = sStatusService.getSingle(null,eq);
+    		if (defaultStatus == null){
+    			logger.warn("tasks/add/batch>>> default status entity is empty,Default status value not set for client." );
+        		return new ReturnT<>(ReturnT.FAIL_CODE, "Please Set Default Status Value for Client");
+    		}
+
 	    	JSONArray jaryTask = JSONArray.parseArray(tasks);
 	    	
 	    	for(int i=0; i<jaryTask.size(); i++){
 	    		RuTask entity = JSON.toJavaObject(jaryTask.getJSONObject(i), RuTask.class);
+	    		if (entity.getSysStatusId()==null){
+	    			entity.setSysStatusId(defaultStatus.getId());
+	    		}
 	    		list.add(entity);
 	    	}
 	    	ruTaskService.addList(list);
@@ -425,12 +446,13 @@ public class TasksController extends BaseController{
     			JSONObject jo = new JSONObject();
     			jo.put("id", one.getId());
     			jo.put("name", one.getName());
+    			jo.put("parentId", one.getParentId()==null?0:one.getParentId());
     			jo.put("isdefault", "0".equals(one.getFlag().trim()));
     			jary.add(jo);
     		}
     		return new ReturnT<JSONArray>(jary); 
     	} catch (Exception e){
-    		logger.error("tasks/getUserBelong>>>",e);
+    		logger.error("tasks/getTaskType>>>",e);
     		return new ReturnT<>(ReturnT.FAIL_CODE, e.getMessage());
     	}
     }
