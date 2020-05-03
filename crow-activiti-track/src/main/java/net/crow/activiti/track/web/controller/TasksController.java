@@ -1,5 +1,6 @@
 package net.crow.activiti.track.web.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
+import net.crow.activiti.track.common.cache.LocalCache;
+import net.crow.activiti.track.common.constant.ConstGlobal;
 import net.crow.activiti.track.common.db.Page;
 import net.crow.activiti.track.common.db.dao.model.ReturnT;
 import net.crow.activiti.track.common.db.entity.GeClient;
@@ -31,6 +34,7 @@ import net.crow.activiti.track.common.db.service.RuJobService;
 import net.crow.activiti.track.common.db.service.RuTaskService;
 import net.crow.activiti.track.common.db.service.SysStatusDictService;
 import net.crow.activiti.track.common.db.service.SysTypeService;
+import net.crow.activiti.track.common.util.MapUtils;
 
 @Controller
 @RequestMapping("/tasks")
@@ -402,7 +406,7 @@ public class TasksController extends BaseController{
     }
 
     /**
-     * 分页查询任务
+     * 分页查询（任务）
      * @param start
      * @param length
      * @param jobId
@@ -413,20 +417,139 @@ public class TasksController extends BaseController{
     public String taskPage(
     		@RequestParam(required = false, defaultValue = "0") int start,
     		@RequestParam(required = false, defaultValue = "20") int length,
-    		String jobId){
+    		String clientOrJobId, String clientOrJob ,String sSearch){
     	
-    	if (jobId == null || jobId.trim().length() == 0){
+    	logger.info("enter tasks/getTasks 分页查询（任务）");
+    	
+    	if (
+    			clientOrJobId == null || clientOrJobId.trim().length() == 0 
+    			|| clientOrJob == null || clientOrJob.trim().length() == 0 ){
+    		
     		JSONObject result = new JSONObject();
     		result.put("recordsTotal", 0);
     		result.put("recordsFiltered", 0);
     		result.put("data", new JSONArray());
     		return result.toJSONString();
     	}
+    	    	
+    	Page<RuTask> page = null;
+    	if (sSearch != null && sSearch.trim().length() > 0){
+    		
+        	page = ruTaskService.page(start, length, clientOrJob, clientOrJobId, sSearch);
+    	} else {
+    		
+        	Map<String, Object> eq = new HashMap<String, Object>(){
+        		/**
+    			 * 
+    			 */
+    			private static final long serialVersionUID = 1L;
+
+    			{
+        			if(ConstGlobal.CLIENT_KEY.equals(clientOrJob)){
+        				this.put("businessKey", clientOrJobId);
+        			} else if (ConstGlobal.JOB_KEY.equals(clientOrJob)){
+        				this.put("procInstId",clientOrJobId);
+        			}
+        		}
+        	};
+    		page = ruTaskService.page(start, length, eq);
+    	}
     	
-    	Map<String, Object> eq = new HashMap<>();
-    	eq.put("sysStatusId", jobId);
-        Page<RuTask> page = ruTaskService.page(start, length, eq);
-        return page.toJsonString();
+        JSONObject resultJson = new JSONObject();
+        
+        resultJson.put("data", new JSONArray());
+        resultJson.put("recordsTotal", page.getTotal());
+        resultJson.put("recordsFiltered", page.getTotal());
+
+        SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        
+        // 获取任务工作类型信息
+        Map<String,Object> taskTypes 	= LocalCache.taskTypeCache();        
+        // 获取任务状态信息
+        Map<String, Object> taskStatus 	= LocalCache.taskStatusCache();
+        
+    	// 获取任务相关信息
+        if (ConstGlobal.ALL_CLIENT_KEY.equals(clientOrJob)){
+        	// 如果是所有的客户
+	        List<String> inJobList 		 = new ArrayList<>();
+	        List<String> inClientList 	 = new ArrayList<>();
+	        
+	        for (RuTask one : page.getResults()){
+	        	if (!inJobList.contains(one.getProcInstId().trim())){
+	        		inJobList.add(one.getProcInstId().trim());
+	        	}
+	        	if (!inClientList.contains(one.getBusinessKey().trim())){
+	        		inClientList.add(one.getBusinessKey().trim());
+	        	}
+	        }
+	        
+	        List<GeClient> clientList 		= geClientService.getList("id", inClientList);
+	        List<RuJob> jobList 			= ruJobService.getList("id", inJobList);
+	        
+	        Map<String, GeClient> clientMap = MapUtils.listToMap("getId", clientList);
+	        Map<String, RuJob> jobMap 		= MapUtils.listToMap("getId", jobList);
+	        
+	        for (RuTask one : page.getResults()){
+	        	
+	        	resultJson.getJSONArray("data").add(new JSONObject(){
+	        		/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+					{
+	        			this.put("id", 				one.getId());
+	        			this.put("name", 			one.getName());
+	        			this.put("desc", 			one.getDesc());
+	        			this.put("spentTime", 		one.getSpentTime()==null?"":one.getSpentTime());
+	        			this.put("estimate", 		one.getEstimate());
+	        			this.put("overdueDate", 	fmt.format(one.getOverdueDate()));
+	        			this.put("lastTrackingDate", fmt.format(one.getLastTrackingDate()));
+	        			this.put("createTime", 		fmt.format(one.getCreateTime()));
+	        			this.put("jobId", 			one.getProcInstId());
+	        			this.put("jobName", 		jobMap.get(one.getProcInstId()).getName());
+	        			this.put("clientId", 		one.getBusinessKey());
+	        			this.put("clientName", 		clientMap.get(one.getBusinessKey()).getName());
+	        			this.put("sysTypeId", 		one.getSysTypeId());
+	        			this.put("sysTypeName", 	((SysType)taskTypes.get(one.getSysTypeId())).getName());
+	        			this.put("sysStatusId", 	one.getSysStatusId());
+	        			this.put("sysStatusName", 	((SysStatusDict)taskStatus.get(one.getSysStatusId())).getName());
+	        			
+	        		}
+	        	});
+	        }
+        } else {
+        	//如果是具体的客户或工作
+	        for (RuTask one : page.getResults()){
+	        	
+	        	resultJson.getJSONArray("data").add(new JSONObject(){
+	        		/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+					{
+	        			this.put("id", 				one.getId());
+	        			this.put("name", 			one.getName());
+	        			this.put("desc", 			one.getDesc());
+	        			this.put("spentTime", 		one.getSpentTime());
+	        			this.put("estimate", 		one.getEstimate());
+	        			this.put("overdueDate", 	fmt.format(one.getOverdueDate()));
+	        			this.put("lastTrackingDate", fmt.format(one.getLastTrackingDate()));
+	        			this.put("createTime", 		fmt.format(one.getCreateTime()));
+	        			this.put("jobId", 			one.getProcInstId());
+	        			this.put("clientId", 		one.getBusinessKey());
+	        			this.put("sysTypeId", 		one.getSysTypeId());
+	        			this.put("sysTypeName", 	((SysType)taskTypes.get(one.getSysTypeId())).getName());
+	        			this.put("sysStatusId", 	one.getSysStatusId());
+	        			this.put("sysStatusName", 	((SysStatusDict)taskStatus.get(one.getSysStatusId())).getName());
+	        			
+	        		}
+	        	});
+	        }
+        }
+        
+        return resultJson.toJSONString();
     }
     
     /**
@@ -476,7 +599,5 @@ public class TasksController extends BaseController{
     		return new ReturnT<>(ReturnT.FAIL_CODE, e.getMessage());
     	}
     }
-    
-
 
 }

@@ -39,8 +39,8 @@ public class RuTask {
 	@Column(name = "desc_") 
 	private String desc;
 
-	@Column(name = "task_def_key_") 
-	private String taskDefKey;
+	@Column(name = "business_key_") 
+	private String businessKey;
 
 	@Column(name = "owner_") 
 	private String owner;
@@ -102,6 +102,7 @@ public class RuTask {
 	private Timestamp updTime;
 	@Column(name = "rev_")
 	private int rev = 1;
+	
 	public String getId() {
 		return id;
 	}
@@ -132,11 +133,11 @@ public class RuTask {
 	public void setDesc(String desc) {
 		this.desc = desc;
 	}
-	public String getTaskDefKey() {
-		return taskDefKey;
+	public String getBusinessKey() {
+		return businessKey;
 	}
-	public void setTaskDefKey(String taskDefKey) {
-		this.taskDefKey = taskDefKey;
+	public void setBusinessKey(String businessKey) {
+		this.businessKey = businessKey;
 	}
 	public String getOwner() {
 		return owner;
@@ -264,5 +265,5 @@ public class RuTask {
 	public void setRev(int rev) {
 		this.rev = rev;
 	}
-
+	
 }

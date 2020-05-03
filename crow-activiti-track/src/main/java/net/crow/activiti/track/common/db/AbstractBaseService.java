@@ -77,9 +77,20 @@ public abstract class AbstractBaseService<T> {
 			return null;
 		}
 	}
-	
+
+	public <V> List<T> getList(String key, List<V> inList){
+		
+		Map<String, List<V>> in = new HashMap<>();
+		in.put(key, inList);
+		return baseDao.findList("", null, null, null, null, null, null, in, null, null, null, null);
+	}
+
 	public T add(T t){
 		return baseDao.add(t);
+	}
+	
+	public Page<?> page(String nativeSql,int page, int pageSize, Object... params){
+		return baseDao.findPage(nativeSql, page, pageSize, params);
 	}
 	
 	public Page<T> page(int page, int pageSize, Map<String, Object> eq){

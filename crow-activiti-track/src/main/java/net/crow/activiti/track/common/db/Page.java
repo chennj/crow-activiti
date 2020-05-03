@@ -72,6 +72,7 @@ public class Page<T> {
 	 * 分页数据
 	 */
 	public List<T> results = new ArrayList<T>();
+	public List<Map<String,Object>> mapResult = new ArrayList<>();
 	
 	public Page() {
 	}
@@ -271,6 +272,14 @@ public class Page<T> {
 
 	public void setResults(List<T> results) {
 		this.results = results;
+	}
+
+	public List<Map<String,Object>> getMapResult() {
+		return mapResult;
+	}
+
+	public void setMapResult(List<Map<String,Object>> mapResult) {
+		this.mapResult = mapResult;
 	}
 
 	public String toJsonString() {

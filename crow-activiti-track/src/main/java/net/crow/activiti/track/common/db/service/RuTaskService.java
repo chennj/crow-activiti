@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import net.crow.activiti.track.common.db.AbstractBaseService;
+import net.crow.activiti.track.common.db.Page;
 import net.crow.activiti.track.common.db.dao.RuJobDao;
 import net.crow.activiti.track.common.db.dao.RuTaskDao;
 import net.crow.activiti.track.common.db.entity.RuJob;
@@ -34,5 +35,15 @@ public class RuTaskService extends AbstractBaseService<RuTask> {
 			throw new Exception("Job:"+list.get(0).getProcInstId()+" is not exists, Please check!");
 		}
 		super.addList(list);
+	}
+
+	public Page<RuTask> page(int start, int length, String clientOrJob, String clientOrJobId, String sSearch) {
+		
+		String Sql = 
+				"Select task.id_ id, task.name_ name, task.spent_time_ spentTime, task.estimate_ estimate, "
+				+ "task.overdue_date_ overdueDate, task.create_time_ createTime, task.last_tracking_date_ lastTrackingDate,"
+				+ "task.sys_status_id_, task.sys_type_id_, "
+				+ "";
+		return null;
 	}
 }

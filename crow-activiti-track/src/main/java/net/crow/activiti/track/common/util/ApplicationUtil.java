@@ -4,9 +4,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 public class ApplicationUtil implements ApplicationContextAware{
 
 	private static ApplicationContext applicationContext = null;
@@ -50,8 +50,9 @@ public class ApplicationUtil implements ApplicationContextAware{
 	 * @param cls
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public static <T> T getBean(Class<T> cls) {
-		return getBean(cls.getName(), cls);
+		return (T) applicationContext.getBean(upperToLowerCamelCase(cls.getSimpleName()));
 	}
 
 	/**
@@ -86,4 +87,11 @@ public class ApplicationUtil implements ApplicationContextAware{
 	public static <T> T convertObjectToTargetClass(Object obj, Class<T> cls) {
 		return (T) obj;
 	}
+	
+    private static String upperToLowerCamelCase(String upperCamelCase) {
+        char[] cs = upperCamelCase.toCharArray();
+        // 类名首字母小写
+        cs[0] += 32;
+        return String.valueOf(cs);
+    }
 }

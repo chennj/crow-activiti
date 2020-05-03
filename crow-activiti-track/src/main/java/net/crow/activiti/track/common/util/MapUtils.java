@@ -7,10 +7,36 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class MapUtils {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+public class MapUtils{
+
+	private static final Logger logger = LoggerFactory.getLogger(MapUtils.class);
+	
+	public static <V,T> Map<V, T> listToMap(String methodNameOfFiled, List<T> list){
+		
+		Map<V, T> resultMap = new HashMap<>();
+		try {
+			for (T t : list){
+				Method m = t.getClass().getDeclaredMethod(methodNameOfFiled, new Class<?>[]{});
+				if (null == m){
+					throw new Exception("Method "+methodNameOfFiled+" not found");
+				}
+				@SuppressWarnings("unchecked")
+				V key = (V) m.invoke(t, new Object[]{});
+				resultMap.put(key, t);
+			}
+		} catch(Exception e){
+			logger.error("listToMap>>>"+e.getLocalizedMessage());
+			e.printStackTrace();
+		}
+		return resultMap;
+	}
+	
 	public static Object mapToObject(Map<String, Object> map, Class<?> beanClass) throws Exception {    
         if (map == null)  
             return null;  

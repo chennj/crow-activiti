@@ -36,7 +36,7 @@ create table actt_hi_procinst (
 	id_ varchar(36) NOT NULL COMMENT '主键',
 	parent_proc_inst_id_ varchar(36) COMMENT '父进程ID',
 	name_ varchar(255) not null,
-	business_key_ varchar(255) not null,
+	business_key_ varchar(64) not null,
 	start_time_ timestamp COMMENT '开始时间',
 	end_time_ timestamp COMMENT '结束时间',
 	duration_ bigint COMMENT '持续时间',
@@ -64,7 +64,7 @@ create table actt_ru_task(
 	name_ varchar(255),
 	parent_task_id_ varchar(36) COMMENT '对应父任务',
 	desc_ varchar(1000),
-	task_def_key_ varchar(255),
+	business_key_ varchar(64) not null,
 	owner_ varchar(255) COMMENT '发起人',
 	assignee_ varchar(255) COMMENT '分配到任务的人',
 	delegation_ varchar(255) COMMENT '委托人',
@@ -87,7 +87,8 @@ create table actt_ru_task(
 	upd_time_ timestamp NULL COMMENT '更新时间', 
 	rev_ int COMMENT '版本',
 	primary key (id_),
-	index actt_idx_ru_task_procinst(proc_inst_id_)
+	index actt_idx_ru_task_procinst(proc_inst_id_),
+	index actt_idx_ru_task_busikey(business_key_)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='当前任务';
 
 drop table if exists actt_hi_taskinst;
@@ -489,9 +490,14 @@ create table actt_sys_type(
 
 alter table actt_hi_procinst add constraint actt_fk_actt_ge_hi_procinst_buskey_id foreign key (business_key_) references actt_ge_client(id_);
 
+alter table actt_ru_task add constraint actt_fk_actt_ru_task_procinst_id foreign key (proc_inst_id_) references actt_hi_procinst(id_);
+
+alter table actt_ru_task_time add constraint actt_fk_actt_ru_task_time_task_id foreign key (task_id_) references actt_ru_task(id_);
+
 alter table	actt_id_belong_user_membership add constraint actt_fk_belong_user_membership_user foreign key actt_id_belong_user_membership(user_id_) references actt_id_user(id_);
 alter table	actt_id_belong_user_membership add constraint actt_fk_belong_user_membership_prop foreign key actt_id_belong_user_membership(belong_id_) references actt_re_user_belong(id_);
 
+alter table actt_id_
 -- 主键算法  select REPLACE(uuid(),'-','');
 insert into actt_re_tenant(id_,name_,status_,account_,addr_,phone_,crt_id_,upd_id_,crt_time_,upd_time_,rev_) value ('00dfbbfd802d11ea814654e1ad0a1f62','demo','0000','demo-account','earth','change frequently','demo','','2020-04-07 00:00:00','2020-04-07 00:00:00',1);
 

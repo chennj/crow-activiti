@@ -11,6 +11,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.query.internal.NativeQueryImpl;
+import org.hibernate.transform.Transformers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -458,6 +460,30 @@ public abstract class AbstractBaseDao<T> implements BaseDao<T> {
 				.setMaxResults(page.getPageSize()).getResultList();
 		page.setResults(list);
 
+		return page;
+	}
+	
+	public Page<?> findPage(String nativeSql, int pgIndex, int pgSize, Object...params){
+		
+		Query query = em.createNativeQuery(nativeSql);
+		
+		int total = ((Long)query.getSingleResult()).intValue();
+		
+		Page<T> page = new Page<T>();
+		page.setPage(pgIndex);
+		page.setPageSize(pgSize);
+		page.init(pgIndex, total);
+		
+		@SuppressWarnings("unchecked")
+		List<Map<String,Object>> mapResult = 
+				query.unwrap(NativeQueryImpl.class)
+				.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
+				.setFirstResult(page.getLimit())
+				.setMaxResults(page.getPageSize())
+				.list();
+		
+		page.setMapResult(mapResult);
+		
 		return page;
 	}
 	

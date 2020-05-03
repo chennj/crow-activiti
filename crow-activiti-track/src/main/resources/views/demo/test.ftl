@@ -10,9 +10,7 @@
     <link rel="stylesheet" href="${request.contextPath}/static/adminlte/plugins/bootstrap-treeview/bootstrap-treeview.css">
 	<!-- datatables -->
 	<!-- link rel="stylesheet" href="${request.contextPath}/static/adminlte/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css"-->
-	<!-- link rel="stylesheet" href="${request.contextPath}/static/plugins/datatables/datatables.min.css"-->
-	<link rel="stylesheet" href="${request.contextPath}/static/plugins/datatables/DataTables-1.10.20/css/jquery.dataTables.min.css">
-	<!-- select2 -->
+	<link rel="stylesheet" href="${request.contextPath}/static/plugins/datatables/datatables.min.css">
 	<link rel="stylesheet" href="${request.contextPath}/static/adminlte/bower_components/select2/css/select2.min.css">
 	<!-- icheck -->
 	<link rel="stylesheet" href="${request.contextPath}/static/adminlte/plugins/iCheck/square/blue.css">
@@ -172,12 +170,10 @@
                 		<div class="panel-body">
                 		
 						<table id="tasks-list" class="table table-bordered table-hover table-striped" style="width:auto;">
-						<thead>							
+						<thead>
 						  	<tr>
 						  		<th name="id"></th>
-						  		<th name="clientName">Client</th>
-							    <th name="jobName">Job</th>
-							    <th name="name">Task</th>
+						  		<th name="name">Client Job Task</th>
 							    <th name="sysStatusName">Status</th>
 							    <th name="spentTime">Spent Time</th>
 							    <th name="estimate">Estimate</th>
@@ -217,8 +213,7 @@
 <script src="${request.contextPath}/static/adminlte/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
 <script src="${request.contextPath}/static/adminlte/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
 -->
-<!--script src="${request.contextPath}/static/plugins/datatables/datatables.js"></script-->
-<script src="${request.contextPath}/static/plugins/datatables/DataTables-1.10.20/js/jquery.dataTables.js"></script>
+<script src="${request.contextPath}/static/plugins/datatables/datatables.js"></script>
 <!-- select2 -->
 <script src="${request.contextPath}/static/adminlte/bower_components/select2/js/select2.min.js"></script>
 <!-- valid -->
@@ -255,12 +250,12 @@
 				    </div>
 			        <div class="form-group">
 			          	<label for="desc">Description</label>
-			          	<textarea class="form-control" rows="6" name="desc" placeholder="Enter ..."></textarea>
+			          	<textarea class="form-control" rows="3" name="desc" placeholder="Enter ..."></textarea>
 			        </div>
 				    <div class="form-group">
 				        <label for="ClientCopy" class="control-label">Copy Jobs from an Existing Client:</label>
-			            <select class="form-control select2" style="width: 100%;" name="ClientCopy">
-			                <option></option>
+			            <select class="form-control select2" name="ClientCopy">
+			                <option value="">-Select client-</option>
 			            </select>
 				    </div>		
 			    </div>    
