@@ -173,6 +173,8 @@
 						<thead>
 						  	<tr>
 						  		<th name="id"></th>
+						  		<th name="clientName">Client</th>
+						  		<th name="jobName">Client</th>
 						  		<th name="name">Client Job Task</th>
 							    <th name="sysStatusName">Status</th>
 							    <th name="spentTime">Spent Time</th>

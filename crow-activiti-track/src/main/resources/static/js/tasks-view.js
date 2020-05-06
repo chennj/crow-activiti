@@ -81,59 +81,16 @@ $(function () {
     }
 
     function initDataTable(){
-    	
-    	oTable = $(taskTable).DataTable({
-    		"deferRender": true,
-    		"processing" : true, 
-    	    "serverSide": true,
-    	    "scrollY": "calc(100vh - 349px)",
-    	    "scrollX":  true,
-    	    "scrollCollapse": true,
-    	    "paging": false,
-    		"ajax": {
-    			url: base_url + "/tasks/getTasks",
-    	        data : function ( d ) {
-    				var obj = {};
-    				obj.start = d.start;
-    				obj.length = d.length;
-    				obj.clientOrJobId = $('#clientorjobid').val();
-    				obj.clientOrJob = $('#clientorjob').val();
-    				obj.sSearch = $('#search-tasks').val();
-    				return obj;
-                }
-    	    },
-    	    "searching": false,
-    	    "ordering": true,
-    	    "columns": [
-    	                { data: 'id', bSortable: false,visible:false},
-    	                { data: 'clientName',width: 300},
-    	                { data: 'jobName',width: 300},
-    	                { data: 'name',width: 300},
-    					{ data: 'sysStatusName',width:110},
-                		{ data: 'spentTime',"defaultContent": "<i>Not set</i>",width:80},
-                		{ data: 'estimate',width:70},
-    	                { data: 'overdueDate',width:150},
-    	                { data: 'lastTrackingDate',width:150},
-    	                { data: 'createTime',width:150}
-    	            ],
-    		"language" : {
-    			"sProcessing" : "working hard...",
-    			"sUrl" : "",
-    			"sEmptyTable" : "not data",
-    			"sLoadingRecords" : "loading..."
-    		},
-    		"initComplete": function(settings, json) {
-    		}
-        });
         
+    	$.post(base_url + "/tasks/getTasks", function(data,status){
+    		
+    		
+    	});
+    	
     	$('#search-tasks').on('click', function(){
     		oTableFresh();
     	});
-    	
-    	//渲染结束之后回调,没啥作用
-    	//$(taskTable).on( 'draw.dt', function () {
-    	//	setDataTableHeight(19);
-    	//});
+
     }
     
     /**
@@ -141,7 +98,7 @@ $(function () {
      */
     function initTaskWorkTypeLayer(){
     	
-    	$.post(base_url + "/tasks/getTaskType", function(data, status) {
+    	$.post(base_url + "/tasks/getTaskTypeList", function(data, status) {
     		
     		if (data.code == "200") {
     			var rdata = data.data;
@@ -1075,7 +1032,7 @@ $(function () {
     }
     
     function oTableFresh(){
-    	oTable.draw();
-    	//setDataTableHeight(19);
+    	//oTable.draw();
     }
+    
 });

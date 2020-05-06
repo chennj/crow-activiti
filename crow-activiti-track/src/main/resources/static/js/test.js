@@ -106,7 +106,9 @@ $(function () {
     	    "ordering": true,
     	    "columns": [
     	                { data: 'id', bSortable: false,visible:false},
-    	                { data: 'name',width: 300},
+    	                { data: 'clientName',width: 150},
+    	                { data: 'jobName',width: 150},
+    	                { data: 'name',width: 150},
     					{ data: 'sysStatusName',width:110},
                 		{ data: 'spentTime',"defaultContent": "<i>Not set</i>",width:80},
                 		{ data: 'estimate',width:70},
@@ -114,13 +116,43 @@ $(function () {
     	                { data: 'lastTrackingDate',width:150},
     	                { data: 'createTime',width:150}
     	            ],
+    		"fnCreatedRow": function(nRow, aData, iDataIndex) {//下拉列表方法
+    			//console.log("下拉按钮>>"+JSON.stringify(aData));
+				$('td:eq(0)', nRow).prepend("<button class='row-details row-details-close btn btn-info btn-xs' data-id='" + aData[0] + "'>+</button>");
+				//$('td:eq(4)', nRow).prepend("<select><option>Stop</option><option selected=true>Start</option></select>");
+			},
+			"fndrawCallback": function (settings) {
+				console.log("日期控件>>"+JSON.stringify(settings));
+	            $(".datepicker").datepicker();
+	        },
+			"columnDefs": [
+			               {
+			            	  "targets": [5, 6, 7, 8, 9],
+			            	  "createdCell": function (cell, cellData, rowData, rowIndex, colIndex) {
+			            		  var aInput;
+			            		  $(cell).click(function () {
+			            			  $(this).html(createCombox(comboData[colIndex]));
+			            			  var aInput = $(this).find(":input");
+			            			  aInput.focus().val("");
+			            		  });
+			            		  $(cell).on("click", ":input", function (e) {
+			            			  e.stopPropagation();
+			            		  });
+			            		  $(cell).on("change", ":input", function () {
+			            			  $(this).blur();
+			            		  });
+			            		  $(cell).on("blur", ":input", function () {
+			            			  var text = $(this).find("option:selected").text();
+			            			  editTableObj.cell(cell).data(text)
+			            		  });
+			            	  }
+			               }
+			              ],
     		"language" : {
     			"sProcessing" : "working hard...",
     			"sUrl" : "",
     			"sEmptyTable" : "not data",
     			"sLoadingRecords" : "loading..."
-    		},
-    		"initComplete": function(settings, json) {
     		}
         });
         
@@ -128,11 +160,34 @@ $(function () {
     		oTableFresh();
     	});
     	
-    	
-    	//渲染结束之后回调,没啥作用
-    	//$(taskTable).on( 'draw.dt', function () {
-    	//	setDataTableHeight(19);
-    	//});
+		$(taskTable).on('click', ' tbody td .row-details', function() {
+			/*
+			var nTr = $(this).parents('tr')[0];
+			console.log(oTable);
+			if(oTable.fnIsOpen(nTr)) //判断是否已打开
+			{
+				$(this).addClass("row-details-close").removeClass("row-details-open");
+				oTable.fnClose(nTr);
+			} else {
+				$(this).addClass("row-details-open").removeClass("row-details-close");
+				fnFormatDetails(nTr, $(this).attr("data-id"));
+			}
+			*/
+			var tr = $(this).parents('tr');
+		    var row = oTable.row( tr );
+		 
+		    if ( row.child.isShown() ) {
+		        // This row is already open - close it
+		        row.child.hide();
+		        tr.removeClass('shown');
+		    }
+		    else {
+		        // Open this row (the format() function would return the data to be shown)
+		    	fnFormatDetails(tr, $(this).data("id"));
+		        tr.addClass('shown');
+		    }
+		});
+
     }
     
     /**
@@ -140,7 +195,7 @@ $(function () {
      */
     function initTaskWorkTypeLayer(){
     	
-    	$.post(base_url + "/tasks/getTaskType", function(data, status) {
+    	$.post(base_url + "/tasks/getTaskTypeList", function(data, status) {
     		
     		if (data.code == "200") {
     			var rdata = data.data;
@@ -1078,43 +1133,43 @@ $(function () {
     	//setDataTableHeight(19);
     }
     
-	function hide(v) {//参数：输入要隐藏的列数，要查第几列，我的是第一列和第二列，所以上面是hide(0)和hide(1)
+    function fnFormatDetails(nTr, pdataId) {
+    	
+    	console.log(pdataId);
+		
+		$.ajax({
+			url: base_url + "/tasks/getTaskTypeList",
+			type: "post", //选择传值方式
+			data: {
+				uid: pdataId
+			},
+			dataType: "JSON",
+			success: function(data) {
+		    	var rdata = data.data;
+				console.log("任务类型数据:"+JSON.stringify(rdata));
 
-        tr = $("#datatable tr").length;// 获取当前表格中行数
-        var mark = 0; //要合并的单元格数
-        var index = 0; //起始行数
-        /*
-         * 要合并单元格，需要存储两个参数，
-         * 1，开始合并的单元格的第一行的行数，
-         * 2.要合并的单元格的个数
-         **/
-        //判断 若只有一行数据，就是表头，则不做调整
-        if (tr > 1) {
-            //var i=1 比较当前的tr和上一个tr的值
-            for (var i = 0; i < tr; i++) {
-                var ford = $("#datatable tr:gt(0):eq(" + i + ") td:eq("+ parseInt(v) + ")").text();
-                //根据下标获取单元格的值
-                // tr:gt(0) 从下标0 开始获取
-                // tr:gt(0):eq( i ) :i 标识 当前行的下标 ，0 开始
-                // td:eq(0) 当前行的第一个单元格，下标从0开始
-                var behind = $("#datatable tr:gt(0):eq(" + (parseInt(i) + 1)+ ") td:eq(" + parseInt(v) + ")").text();
-                
-                    if (ford != "" && ford == behind) {
-                        $("#datatable tr:gt(0):eq(" + (parseInt(i) + 1)+ ") td:eq(" + parseInt(v) + ")").attr("class","remove");
-                        mark = mark + 1;
-                    } else if (ford != behind) {
-                        index = i - mark;
-                        $("#datatable tr:gt(0):eq(" + index + ") td:eq("+ parseInt(v) + ")").attr("rowspan",mark + 1);//将当前的行加入属性rowspan，合并 mark+1行
-                        $("#datatable tr:gt(0):eq(" + index + ") td:eq("+ parseInt(v) + ")").attr("class","marge");
-                        //rowspan 列上横跨， colspan 行上横跨
-                        //后面的参数，表示横跨的单元格个数，
-                        //合并单元格就是将其他的单元格隐藏（hide）,或删除（remove）。
-                        //将一个单元格的rowspan 或colsspan 加大
+				var sOut = '<table class="table table-bordered" style="text-align:center;margin:0;"><tr><th style="text-align:center;">平台</th><th style="text-align:center;">账号</th><th style="text-align:center;">邮箱</th><th style="text-align:center;">操作</th></tr>';
+				for(var i = 0; i < rdata.length; i++) {
+					sOut += '<tr><td><a target="_blank" href="https://'+rdata[i].flag+'"><span style="font-weight:bold;">' + rdata[i].name + '</span></a></td>'+
+						'<td><span">' + rdata[i].category + '</span></td>' +
+						'<td><span">' + rdata[i].tenantName + '</span></td>' +
+						'<td><button class="btn btn-danger btn-xs" onclick=del_email(' + rdata[i].id + ')>删除</button></td></tr>';
+				}
+				sOut += '</table>'
+				//oTable.fnOpen(nTr, sOut, 'details'); //展开下拉列表
+				var row = oTable.row( nTr );
+				row.child(sOut).show();
+			}
+		})
 
-                        mark = 0;
-                }
-            }
-        }
-    }
-
+	}
+    
+    function createCombox(data) {
+    	var _html = '<select style="width:100%;">';
+    	data.forEach(function (ele, index) {
+    		_html += '<option>' + ele + '</option>';
+    	});
+    	_html += '</select>';
+    	return _html;
+	}
 });

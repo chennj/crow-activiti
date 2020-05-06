@@ -96,7 +96,11 @@ public abstract class AbstractBaseService<T> {
 	public Page<T> page(int page, int pageSize, Map<String, Object> eq){
 		return baseDao.findPage(page, pageSize, null, eq, null, null, null, null, null, null, null, null, null, null);
 	}
-	
+
+	public Page<T> page(int page, int pageSize, String order, Map<String, Object> eq){
+		return baseDao.findPage(page, pageSize, order, eq, null, null, null, null, null, null, null, null, null, null);
+	}
+
 	public Page<T> pageLk(int page, int pageSize, Map<String, Object> like){
 		boolean isDebug =
 			     java.lang.management.ManagementFactory.getRuntimeMXBean().

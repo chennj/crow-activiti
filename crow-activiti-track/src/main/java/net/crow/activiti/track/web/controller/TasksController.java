@@ -417,7 +417,10 @@ public class TasksController extends BaseController{
     public String taskPage(
     		@RequestParam(required = false, defaultValue = "0") int start,
     		@RequestParam(required = false, defaultValue = "20") int length,
-    		String clientOrJobId, String clientOrJob ,String sSearch){
+    		String clientOrJobId, 
+    		String clientOrJob ,
+    		String sSearch,
+    		String order){
     	
     	logger.info("enter tasks/getTasks 分页查询（任务）");
     	
@@ -432,11 +435,55 @@ public class TasksController extends BaseController{
     		return result.toJSONString();
     	}
     	    	
-    	Page<RuTask> page = null;
+        JSONObject resultJson = new JSONObject();
+        
     	if (sSearch != null && sSearch.trim().length() > 0){
     		
-        	page = ruTaskService.page(start, length, clientOrJob, clientOrJobId, sSearch);
-    	} else {
+    		Page<?> page = ruTaskService.page(start, length, clientOrJob, clientOrJobId, sSearch, order);
+    			        
+	        resultJson.put("data", new JSONArray());
+	        resultJson.put("recordsTotal", page.getTotal());
+	        resultJson.put("recordsFiltered", page.getTotal());
+
+	        SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	        
+	        // 获取任务工作类型信息
+	        Map<String,Object> taskTypes 	= LocalCache.taskTypeCache();        
+	        // 获取任务状态信息
+	        Map<String, Object> taskStatus 	= LocalCache.taskStatusCache();
+	        
+	        List<Map<String, Object>> list = page.getMapResult();
+	        
+	        for (Map<String, Object> one : list){
+	        	
+	        	resultJson.getJSONArray("data").add(new JSONObject(){
+	        		/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+					{
+	        			this.put("id", 				one.get("id"));
+	        			this.put("name", 			one.get("name"));
+	        			this.put("desc", 			one.get("desc"));
+	        			this.put("spentTime", 		one.getOrDefault("spentTime", ""));
+	        			this.put("estimate", 		one.getOrDefault("estimate",""));
+	        			this.put("overdueDate", 	fmt.format(one.get("overdueDate")));
+	        			this.put("lastTrackingDate", fmt.format(one.get("lastTrackingDate")));
+	        			this.put("createTime", 		fmt.format(one.get("createTime")));
+	        			this.put("jobId", 			one.get("jobId"));
+	        			this.put("jobName", 		one.getOrDefault("jobName",one.get("jobId")));
+	        			this.put("clientId", 		one.get("business_key_"));
+	        			this.put("clientName", 		one.getOrDefault("clientName",one.get("clientId")));
+	        			this.put("sysTypeId", 		one.get("sysTypeId"));
+	        			this.put("sysTypeName", 	((SysType)taskTypes.get(one.get("sysTypeId"))).getName());
+	        			this.put("sysStatusId", 	one.get("sysStatusId"));
+	        			this.put("sysStatusName", 	((SysStatusDict)taskStatus.get(one.get("sysStatusId"))).getName());
+	        			
+	        		}
+	        	});	        	
+	        }
+    	} else {   
     		
         	Map<String, Object> eq = new HashMap<String, Object>(){
         		/**
@@ -452,25 +499,20 @@ public class TasksController extends BaseController{
         			}
         		}
         	};
-    		page = ruTaskService.page(start, length, eq);
-    	}
-    	
-        JSONObject resultJson = new JSONObject();
-        
-        resultJson.put("data", new JSONArray());
-        resultJson.put("recordsTotal", page.getTotal());
-        resultJson.put("recordsFiltered", page.getTotal());
-
-        SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        
-        // 获取任务工作类型信息
-        Map<String,Object> taskTypes 	= LocalCache.taskTypeCache();        
-        // 获取任务状态信息
-        Map<String, Object> taskStatus 	= LocalCache.taskStatusCache();
-        
-    	// 获取任务相关信息
-        if (ConstGlobal.ALL_CLIENT_KEY.equals(clientOrJob)){
-        	// 如果是所有的客户
+        	
+        	Page<RuTask> page = ruTaskService.page(start, length, order, eq);
+	        
+	        resultJson.put("data", new JSONArray());
+	        resultJson.put("recordsTotal", page.getTotal());
+	        resultJson.put("recordsFiltered", page.getTotal());
+	
+	        SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	        
+	        // 获取任务工作类型信息
+	        Map<String,Object> taskTypes 	= LocalCache.taskTypeCache();        
+	        // 获取任务状态信息
+	        Map<String, Object> taskStatus 	= LocalCache.taskStatusCache();
+	        
 	        List<String> inJobList 		 = new ArrayList<>();
 	        List<String> inClientList 	 = new ArrayList<>();
 	        
@@ -489,6 +531,7 @@ public class TasksController extends BaseController{
 	        Map<String, GeClient> clientMap = MapUtils.listToMap("getId", clientList);
 	        Map<String, RuJob> jobMap 		= MapUtils.listToMap("getId", jobList);
 	        
+	    	// 获取任务相关信息
 	        for (RuTask one : page.getResults()){
 	        	
 	        	resultJson.getJSONArray("data").add(new JSONObject(){
@@ -518,64 +561,61 @@ public class TasksController extends BaseController{
 	        		}
 	        	});
 	        }
-        } else {
-        	//如果是具体的客户或工作
-	        for (RuTask one : page.getResults()){
-	        	
-	        	resultJson.getJSONArray("data").add(new JSONObject(){
-	        		/**
-					 * 
-					 */
-					private static final long serialVersionUID = 1L;
 
-					{
-	        			this.put("id", 				one.getId());
-	        			this.put("name", 			one.getName());
-	        			this.put("desc", 			one.getDesc());
-	        			this.put("spentTime", 		one.getSpentTime());
-	        			this.put("estimate", 		one.getEstimate());
-	        			this.put("overdueDate", 	fmt.format(one.getOverdueDate()));
-	        			this.put("lastTrackingDate", fmt.format(one.getLastTrackingDate()));
-	        			this.put("createTime", 		fmt.format(one.getCreateTime()));
-	        			this.put("jobId", 			one.getProcInstId());
-	        			this.put("clientId", 		one.getBusinessKey());
-	        			this.put("sysTypeId", 		one.getSysTypeId());
-	        			this.put("sysTypeName", 	((SysType)taskTypes.get(one.getSysTypeId())).getName());
-	        			this.put("sysStatusId", 	one.getSysStatusId());
-	        			this.put("sysStatusName", 	((SysStatusDict)taskStatus.get(one.getSysStatusId())).getName());
-	        			
-	        		}
-	        	});
-	        }
-        }
-        
-        return resultJson.toJSONString();
+    	} 
+    	
+    	return resultJson.toJSONString();
+
     }
     
     /**
-     * 获取任务的所有类型
+     * 获取任务的所有类型（列表）
+     * 
      * @param request
      * @return
      */
-    @RequestMapping("/getTaskType")
+    @RequestMapping("/getTaskTypeList")
     @ResponseBody
-    public ReturnT<JSONArray> getTaskTypes(HttpServletRequest request){
+    public ReturnT<JSONArray> getTaskTypeList(HttpServletRequest request){
     	
     	JSONArray jary = new JSONArray();
     	
-    	List<SysType> list = sTypeService.getList("category", "Task");
+    	Map<String,Object> taskTypes 	= LocalCache.taskTypeCache();  
     	try {
-    		for (SysType one : list){
+    		for (Map.Entry<String, Object> entry : taskTypes.entrySet()){
     			JSONObject jo = new JSONObject();
-    			jo.put("id", one.getId());
-    			jo.put("name", one.getName());
-    			jo.put("parentId", one.getParentId()==null?0:one.getParentId());
-    			jo.put("isdefault", "0".equals(one.getFlag().trim()));
+    			jo.put("id", entry.getKey());
+    			jo.put("name", ((SysType)entry.getValue()).getName());
+    			jo.put("parentId", ((SysType)entry.getValue()).getParentId()==null?0:((SysType)entry.getValue()).getParentId());
+    			jo.put("isdefault", "0".equals(((SysType)entry.getValue()).getFlag()));
     			jary.add(jo);
     		}
     		return new ReturnT<JSONArray>(jary); 
     	} catch (Exception e){
-    		logger.error("tasks/getTaskType>>>",e);
+    		logger.error("tasks/getTaskTypeList>>>",e);
+    		return new ReturnT<>(ReturnT.FAIL_CODE, e.getMessage());
+    	}
+    }
+    
+    /**
+     * 获取任务的所有类型（映射）
+     * 
+     * @param request
+     * @return
+     */
+    @RequestMapping("/getTaskTypeMap")
+    @ResponseBody
+    public ReturnT<JSONObject> getTaskTypeMap(HttpServletRequest request){
+    	
+    	logger.info("enter tasks/getTaskTypeMap");
+    	
+    	Map<String,Object> taskTypes 	= LocalCache.taskTypeCache();  
+    	
+    	try {
+    		JSONObject jo = JSONObject.parseObject(JSON.toJSONString(taskTypes));
+    		return new ReturnT<JSONObject>(jo);
+    	} catch (Exception e){
+    		logger.error("tasks/getTaskTypeMap>>>",e);
     		return new ReturnT<>(ReturnT.FAIL_CODE, e.getMessage());
     	}
     }

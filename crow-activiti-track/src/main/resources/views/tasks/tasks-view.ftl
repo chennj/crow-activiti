@@ -11,7 +11,6 @@
 	<!-- datatables -->
 	<!-- link rel="stylesheet" href="${request.contextPath}/static/adminlte/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css"-->
 	<!-- link rel="stylesheet" href="${request.contextPath}/static/plugins/datatables/datatables.min.css"-->
-	<link rel="stylesheet" href="${request.contextPath}/static/plugins/datatables/DataTables-1.10.20/css/jquery.dataTables.min.css">
 	<!-- select2 -->
 	<link rel="stylesheet" href="${request.contextPath}/static/adminlte/bower_components/select2/css/select2.min.css">
 	<!-- icheck -->
@@ -216,9 +215,8 @@
 <!--
 <script src="${request.contextPath}/static/adminlte/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
 <script src="${request.contextPath}/static/adminlte/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+<script src="${request.contextPath}/static/plugins/datatables/datatables.js"></script>
 -->
-<!--script src="${request.contextPath}/static/plugins/datatables/datatables.js"></script-->
-<script src="${request.contextPath}/static/plugins/datatables/DataTables-1.10.20/js/jquery.dataTables.js"></script>
 <!-- select2 -->
 <script src="${request.contextPath}/static/adminlte/bower_components/select2/js/select2.min.js"></script>
 <!-- valid -->
@@ -231,7 +229,7 @@
 <script src="${request.contextPath}/static/adminlte/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
 
 <!-- tasks-view -->
-<script src="${request.contextPath}/static/js/test.js"></script>
+<script src="${request.contextPath}/static/js/tasks-view.js"></script>
 
 </body>
 
