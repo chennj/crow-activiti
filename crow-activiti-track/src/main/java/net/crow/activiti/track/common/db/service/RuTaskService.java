@@ -3,10 +3,9 @@ package net.crow.activiti.track.common.db.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import net.crow.activiti.track.common.constant.ConstGlobal;
 import net.crow.activiti.track.common.db.AbstractBaseService;
@@ -42,6 +41,7 @@ public class RuTaskService extends AbstractBaseService<RuTask> {
 		super.addList(list);
 	}
 
+	@Transactional(readOnly=true)
 	public Page<?> page(int start, int length, String clientOrJob, String clientOrJobId, String sSearch, String order) {
 		
 		StringBuilder sql = new StringBuilder()
