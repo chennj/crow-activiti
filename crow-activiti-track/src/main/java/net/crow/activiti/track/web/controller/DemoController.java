@@ -10,16 +10,25 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("demo")
+@RequestMapping("test")
 public class DemoController extends BaseController{
 
-	@RequestMapping("/task")
-	public String help(Model model, HttpServletRequest request){
+	@RequestMapping("/test-view-tasks")
+	public String test(Model model, HttpServletRequest request){
 		
 		Map<String, Object> info = new HashMap<>();
 		model.addAllAttributes(info);
 
 		return "demo/test";
+	}
+
+	@RequestMapping("/test-mytable")
+	public String test2(Model model, HttpServletRequest request){
+		
+		Map<String, Object> info = new HashMap<>();
+		model.addAllAttributes(info);
+
+		return "demo/test2";
 	}
 
 }

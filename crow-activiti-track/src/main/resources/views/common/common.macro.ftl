@@ -168,7 +168,19 @@
 				<li class="<#if pageName == "reports">active</#if>"><a href="${request.contextPath}/reports"><i class="fa fa-circle-o text-green"></i><span>Reports</span></a></li>
                 <li class="<#if pageName == "users">active</#if>"><a href="${request.contextPath}/users"><i class="fa fa-circle-o text-red"></i><span>Users</span></a></li>
                 <li class="<#if pageName == "help">active</#if>"><a href="${request.contextPath}/help"><i class="fa fa-circle-o text-gray"></i><span>Usage-help</span></a></li>
-                <li class="<#if pageName == "demo">active</#if>"><a href="${request.contextPath}/demo/task"><i class="fa fa-circle-o text-gray"></i><span>Demo</span></a></li>
+                <li class="treeview" >
+                	<a href="jjavascript:;">
+                		<i class="fa fa-circle-o text-aqua"></i>
+                		<span>Test</span>
+                		<span class="pull-right-container">
+                			<i class="fa fa-angle-left pull-right"></i>
+                		</span>
+                	</a>
+	                <ul class="treeview-menu">
+						<li class="<#if pageName == "test">active</#if>"><a href="${request.contextPath}/test/test-view-tasks">Test-view-tasks</a></li>
+						<li class="<#if pageName == "test2">active</#if>"><a href="${request.contextPath}/test/test-mytable">Test-myTable</a></li>						
+		            </ul>
+                 </li>
 			</ul>
 		</section>
 		<!-- /.sidebar -->

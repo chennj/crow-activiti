@@ -17,43 +17,41 @@
 	<!-- bootstrap datepicker -->
 	<link rel="stylesheet" href="${request.contextPath}/static/adminlte/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
 	<style>
-	.panel{
-		margin-bottom:0px;
-		border-radius:0px;
-	}
-	.bg-light-blue{
-		/*background-color:rgb(235, 245, 255)!important;*/
-		background-color:#f3f5f9!important;
-	}
-	
-	#tree-clients-jobs > .nav ul {background-color:#f3f5f9;}
-	#tree-clients-jobs > .nav li a {color:black;}
-	#tree-clients-jobs > .nav li > ul {padding-left:0px;}
-	#tree-clients-jobs > .nav li > ul > li > a{padding-left:36px;}
-	#tree-clients-jobs > .nav > li > a:hover,
-	#tree-clients-jobs > .nav > li > a:active,
-	#tree-clients-jobs > .nav > li > a:focus,
-	#tree-clients-jobs > .nav > li > ul > li > a:hover,
-	#tree-clients-jobs > .nav > li > ul > li > a:active,
-	#tree-clients-jobs > .nav > li > ul > li > a:focus {
-	  	color: white;
-	  	background:#3c8dbc;
-	}
-	#tree-clients-jobs >.nav > li.selected,
-	#tree-clients-jobs >.nav > li > ul > li.selected{
-	  	background:gray;
-	}
-		
-	/*
-	.wrapper>.content-wrapper>section.content{
-		padding-bottom:	0px;
-		}
-	*/
-	.select2-job-position{margin-left:10%;width:90%;}
-	body .demo-class .layui-layer-title{background:#ccc; color:#fff; border: none;}
-	body .task-type-class .layui-layer-title{background:#ccc; color:#fff; border: none;}
-	
-	body .dataTables_scrollBody{height: calc(100vh - 349px);}
+        *{
+            padding: 0;
+            margin: 0;
+        }
+        .table tr th,
+        td {
+            border: 1px solid #000;
+        }
+
+        .table-responsive {
+            overflow-y: scroll;
+        }
+
+        .text-center td {
+            white-space: nowrap;
+            padding: 10px;
+        }
+
+        .table-th-css {
+            background: #efeff4 !important;
+            position: relative !important;
+            text-align: center;
+            top: 0;
+            white-space: nowrap;
+        }
+
+        .table-th-css div {
+            border-top: none;
+            white-space: nowrap;
+            padding: 10px;
+        }
+
+        .section-scroll {
+            height: 417px;
+        }
 	</style>
 	
 </head>
@@ -62,7 +60,7 @@
 	<!-- header -->
 	<@netCommon.commonHeader />
 	<!-- left -->
-	<@netCommon.commonLeft "test" />
+	<@netCommon.commonLeft "test2" />
 	
 	<!-- Content Wrapper. Contains page content -->
 	<div class="content-wrapper">
@@ -71,7 +69,7 @@
 			<h1>Tasks Manager</h1>
 			<ol class="breadcrumb">
         		<li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-        		<li class="active">Test</li>
+        		<li class="active">Tasks</li>
       		</ol>
 		</section>
 
@@ -80,120 +78,270 @@
 			
             <!-- 任务管理-->
             <div class="row">
-				
-				<!-- client and job -->
-                <div class="col-sm-4" id="leftPart">
-                	<div class="row">
-                		<div class="panel panel-default bg-light-blue" id="leftPart-sub-1">
-                		<div class="panel-body">
-	               			<button type="button" class="btn btn-primary btn-flat col-sm-6"><i class="fa fa-fw fa-angle-double-left"></i>Clients & Jobs</button>                		
-							<div class="input-group-btn">
-	 						  	<button type="button" class="btn btn-primary btn-flat dropdown-toggle pull-right" data-toggle="dropdown">
-								  	<span class="glyphicon glyphicon-plus"></span>Add New
-								    <span class="fa fa-caret-down"></span>
-							    </button>
-							  	<ul class="dropdown-menu" id="clients-jobs-addnew">
-								    <li><a href="#"><span class="glyphicon glyphicon-align-justify"></span>+ New Client</a></li>
-								    <li class="divider"></li>
-								    <li><a href="#"><span class="glyphicon glyphicon-align-justify"></span>+ New Job</a></li>
-								    <li class="divider"></li>
-								    <li><a href="#"><span class="glyphicon glyphicon-align-justify"></span>+ New Tasks</a></li>
-								    <li class="divider"></li>
-								    <li><a href="#"><span class="glyphicon glyphicon-align-justify"></span>Import Tasks From XLS</a></li>
-							  	</ul>
-							</div>
-						</div>
-						<div class="panel-body">
-	                		<!-- search -->
-						  	<div class="input-group">
-						    	<input type="text" id="input-search-clients-jobs" name="input-search-clients-jobs" 
-						    	class="form-control" placeholder="Search..." 
-						    	data-list=".clients-jobs-list" autocomplete="off"/>
-						    	<span class="input-group-btn">
-						          	<button type="button" name="search" id="search-clients-jobs" class="btn btn-flat"><i class="fa fa-search"></i>
-						          	</button>
-						        </span>
-						  	</div>
-	                	</div>
-                		</div>
-                	</div>
-                	
-                	<!-- 结果集属性设置 -->
-                	<div class="row">
-                		<div class="panel panel-default bg-light-blue" id="leftPart-sub-2">
-                		<div class="panel-body">
-                		<div class="btn-group-horizontal">
-							<button type="button" class="btn btn-primary btn-flat"><i class="fa fa-align-left" id="button-property-set-left"></i></button>
-                      		<button type="button" class="btn btn-primary btn-flat"><i class="fa fa-align-center"></i></button>
-                      		<button type="button" class="btn btn-primary btn-flat"><i class="fa fa-align-right"></i></button>
-                		</div>
-                		</div>
-                		</div>
-                	</div>
-                	
-                	<!-- 需要搜索的结果集 -->
-                	<div class="row">
-                		<div id="tree-clients-jobs" style="height:auto;overflow-y:auto;">
-                		<ul class="nav nav-pills nav-stacked clients-jobs-list" data-widget="tree">
-                		<!-- ul class="nav nav-pills nav-stacked clients-jobs-list"-->
-                		</ul>
-                		</div>
-                	</div>
-                </div>
-                
-                <!-- tasks -->
-                <div class="col-sm-8">
-                	<div class="row">
-                		<div class="panel panel-default">
-                		<div class="panel-body">
-							<div class="col-sm-6 lead"><label class="taskDataTable-header"></label>
-							<input type="hidden" id="clientorjobid" value=""/>
-							<input type="hidden" id="clientorjob" value=""/>
-							</div>
-                			<!-- search -->
-                			<div class="col-sm-6">
-						  	<div class="input-group">
-						    	<input type="text" name="search-tasks-text" class="form-control" placeholder="Search...">
-						    	<span class="input-group-btn">
-						          	<button type="button" name="search" id="search-tasks" class="btn btn-flat"><i class="fa fa-search"></i>
-						          	</button>
-						        </span>
-						  	</div> 
-						  	</div>         			
-                		</div>
-                		</div>
-                	</div>
-                	
-                	<div class="row">
-                	
-                		<div class="panel panel-default" id="tasks-list-panel">
-                		<div class="panel-body">
-                		
-						<table id="tasks-list" class="table table-bordered table-hover table-striped" style="width:auto;">
-						<thead>
-						  	<tr>
-						  		<th name="id"></th>
-						  		<th name="clientName">Client</th>
-						  		<th name="jobName">Client</th>
-						  		<th name="name">Client Job Task</th>
-							    <th name="sysStatusName">Status</th>
-							    <th name="spentTime">Spent Time</th>
-							    <th name="estimate">Estimate</th>
-							    <th name="overdueDate">Deadline</th>
-							    <th name="lastTrackingDate">Last Tracking Date</th>
-							    <th name="createTime">Creation Date</th>
-						  	</tr>
-						</thead>
-		                <tbody>
-		                </tbody>
-		                <tfoot></tfoot>
-						</table>  
-						
-						</div>        	
-                		</div>
-                	</div>
-                </div>
-
+				<div class="col-sm-8">
+				<!-- myTable -->
+			    <div class="table-responsive section-scroll">
+			        <table class="table table-bordered">
+			            <thead class="table-header">
+			                <tr>
+			                    <th class="table-th-css">
+			                        <div>部门</div>
+			                    </th>
+			                    <th class="table-th-css">
+			                        <div>用户名称</div>
+			                    </th>
+			                    <th class="text-center table-th-css">
+			                        <div>1月</div>
+			                    </th>
+			                    <th class="text-center table-th-css">
+			                        <div>2月</div>
+			                    </th>
+			                    <th class="text-center table-th-css">
+			                        <div>3月</div>
+			                    </th>
+			                    <th class="text-center table-th-css">
+			                        <div>4月</div>
+			                    </th>
+			                    <th class="text-center table-th-css">
+			                        <div>5月</div>
+			                    </th>
+			                    <th class="text-center table-th-css">
+			                        <div>6月</div>
+			                    </th>
+			                    <th class="text-center table-th-css">
+			                        <div>7月</div>
+			                    </th>
+			                    <th class="text-center table-th-css">
+			                        <div>8月</div>
+			                    </th>
+			                    <th class="text-center table-th-css">
+			                        <div>9月</div>
+			                    </th>
+			                    <th class="text-center table-th-css">
+			                        <div>10月</div>
+			                    </th>
+			                    <th class="text-center table-th-css">
+			                        <div>11月</div>
+			                    </th>
+			                    <th class="text-center table-th-css">
+			                        <div>12月</div>
+			                    </th>
+			                    <th class="text-center table-th-css">
+			                        <div>合计</div>
+			                    </th>
+			                </tr>
+			            </thead>
+			            <tbody>
+			                <tr class="text-center">
+			                    <td>这是一个表格内容</td>
+			                    <td class="table-textWidth">这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                </tr>
+			                <tr class="text-center">
+			                    <td>这是一个表格内容</td>
+			                    <td class="table-textWidth">这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                </tr>
+			                <tr class="text-center">
+			                    <td>这是一个表格内容</td>
+			                    <td class="table-textWidth">这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                </tr>
+			                <tr class="text-center">
+			                    <td>这是一个表格内容</td>
+			                    <td class="table-textWidth">这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                </tr>
+			                <tr class="text-center">
+			                    <td>这是一个表格内容</td>
+			                    <td class="table-textWidth">这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                </tr>
+			                <tr class="text-center">
+			                    <td>这是一个表格内容</td>
+			                    <td class="table-textWidth">这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                </tr>
+			                <tr class="text-center">
+			                    <td>这是一个表格内容</td>
+			                    <td class="table-textWidth">这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                </tr>
+			                <tr class="text-center">
+			                    <td>这是一个表格内容</td>
+			                    <td class="table-textWidth">这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                </tr>
+			                <tr class="text-center">
+			                    <td>这是一个表格内容</td>
+			                    <td class="table-textWidth">这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                </tr>
+			                <tr class="text-center">
+			                    <td>这是一个表格内容</td>
+			                    <td class="table-textWidth">这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                </tr>
+			                <tr class="text-center">
+			                    <td>这是一个表格内容</td>
+			                    <td class="table-textWidth">这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                </tr>
+			                <tr class="text-center">
+			                    <td>这是一个表格内容</td>
+			                    <td class="table-textWidth">这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                    <td>这是一个表格内容</td>
+			                </tr>
+			                <!-- 循环多次tr...-->
+			            </tbody>
+			        </table>
+			    </div>
+				<!-- end myTable -->
+				</div>
             </div>
 		</section>
 		<!-- /.content -->
@@ -686,5 +834,48 @@
 	id="modal-addnew-task-type-list" 
 	style="display:none;">
 </div>		
+
+<script>
+    var tableCont = $(".section-scroll tr th");
+    //获取th
+    var tableCont_child = $(".section-scroll tr th div");
+    //获取th下边的div
+    var tableScroll = $(".section-scroll");
+    //获取滚动条同级的class
+    function scrollHandle() {
+        // console.log(1)
+        var scrollTop = tableScroll.scrollTop();
+        // 当滚动距离大于0时设置top及相应的样式
+        if (scrollTop > 0) {
+            tableCont.css({
+                "top": scrollTop + "px",
+                "padding": "0"
+            });
+            tableCont_child.css({
+                "borderTop": "1px solid #000",
+                "borderBottom": "1px solid #000",
+                "marginTop": "-1px",
+                "padding": "8px"
+            });
+        } else {
+            // 当滚动距离小于0时设置top及相应的样式
+            tableCont.css({
+                "top": scrollTop + "px",
+                "marginTop": "0"
+            });
+            tableCont_child.css({
+                "border": "none",
+                "marginTop": 0,
+                "marginBottom": 0,
+            })
+        }
+    }
+    tableScroll.on("scroll", scrollHandle);
+    //获取可视区域高度
+    // function setIframeHeight() {
+    //     var screenHeight = document.documentElement.clientHeight;
+    //     $(".section-scroll").height(screenHeight);
+    // }
+</script>
 
 </html>
