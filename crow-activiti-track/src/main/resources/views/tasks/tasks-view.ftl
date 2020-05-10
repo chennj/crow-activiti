@@ -17,6 +17,9 @@
 	<link rel="stylesheet" href="${request.contextPath}/static/adminlte/plugins/iCheck/square/blue.css">
 	<!-- bootstrap datepicker -->
 	<link rel="stylesheet" href="${request.contextPath}/static/adminlte/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
+
+	<link rel="stylesheet" href="${request.contextPath}/static/plugins/mytable/mytable.css">
+
 	<style>
 	.panel{
 		margin-bottom:0px;
@@ -173,16 +176,16 @@
 						<table id="tasks-list" class="table table-bordered table-hover table-striped" style="width:auto;">
 						<thead>							
 						  	<tr>
-						  		<th name="id"></th>
-						  		<th name="clientName">Client</th>
-							    <th name="jobName">Job</th>
-							    <th name="name">Task</th>
-							    <th name="sysStatusName">Status</th>
-							    <th name="spentTime">Spent Time</th>
-							    <th name="estimate">Estimate</th>
-							    <th name="overdueDate">Deadline</th>
-							    <th name="lastTrackingDate">Last Tracking Date</th>
-							    <th name="createTime">Creation Date</th>
+						  		<th name="id" class="dontshow"></th>
+						  		<th name="clientName" width="150">Client</th>
+							    <th name="jobName" width="150">Job</th>
+							    <th name="name" width="150">Task</th>
+							    <th name="sysStatusName" width="100">Status</th>
+							    <th name="spentTime" width="120">Spent Time</th>
+							    <th name="estimate" width="100">Estimate</th>
+							    <th name="overdueDate" width="120">Deadline</th>
+							    <th name="lastTrackingDate" width="160">Last Tracking Date</th>
+							    <th name="createTime" width="150">Creation Date</th>
 						  	</tr>
 						</thead>
 		                <tbody>
@@ -230,6 +233,7 @@
 
 <!-- tasks-view -->
 <script src="${request.contextPath}/static/js/tasks-view.js"></script>
+<script src="${request.contextPath}/static/plugins/mytable/mytable.js"></script>
 
 </body>
 

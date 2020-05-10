@@ -77,15 +77,12 @@ $(function () {
         var tableMargin = margin || 15;
         var tableHeight = bodyHeight - tableOffsetTop - footerHeight - tableMargin;
         $(taskTableWrapper).css("height",tableHeight+"px");
-        console.log("tableMargin>>>"+tableMargin);
+        //console.log("右边人物列表高度：>>>"+tableMargin);
     }
 
     function initDataTable(){
         
-    	$.post(base_url + "/tasks/getTasks", function(data,status){
-    		
-    		
-    	});
+    	oTable = $("#tasks-list").myTable();
     	
     	$('#search-tasks').on('click', function(){
     		oTableFresh();
@@ -102,7 +99,7 @@ $(function () {
     		
     		if (data.code == "200") {
     			var rdata = data.data;
-    			console.log("data:"+JSON.stringify(rdata));
+    			//console.log("data:"+JSON.stringify(rdata));
     			var len = rdata.length;
     			if (len == 0){
     				return;
@@ -140,10 +137,10 @@ $(function () {
     				}
     			});
     			
-    			console.log("获取工作类型，过滤前："+JSON.stringify(rdata));
+    			//console.log("获取工作类型，过滤前："+JSON.stringify(rdata));
     			rdata = rdata.filter(ele=>ele.parentId === 0);
-    			console.log("获取工作类型，过滤后："+JSON.stringify(rdata));
-    			console.log("获取工作类型，html："+$(ul).html());
+    			//console.log("获取工作类型，过滤后："+JSON.stringify(rdata));
+    			//console.log("获取工作类型，html："+$(ul).html());
     			
     			$('#modal-addnew-task-type-list').append(ul);
     			
@@ -167,7 +164,7 @@ $(function () {
         	if (data.code == "200") {
         		var li = "";
         		var rdata = data.data.data;
-        		console.log("data:"+JSON.stringify(rdata));
+        		//console.log("data:"+JSON.stringify(rdata));
         		var len = rdata.length;
         		if (len>0){
         			li += '<li data-id="allclients" data-name="allclients">'+
@@ -182,7 +179,7 @@ $(function () {
         			'<ul class="treeview-menu"></ul>'+
         			'</li>';
         		}
-        		console.log("左边客户列表："+li);
+        		//console.log("左边客户列表："+li);
             	$('#tree-clients-jobs ul').append(li);
             	$('#input-search-clients-jobs').hideseek();
         	} else {
@@ -248,13 +245,13 @@ $(function () {
                     				'</a>'+
                     				'</li>';
         		    		}
-        		    		console.log('jobs of client["'+clientId+'"]='+li);
-        		    		console.log('ul ["'+clientId+'"]='+$(ul));
+        		    		//console.log('jobs of client["'+clientId+'"]='+li);
+        		    		//console.log('ul ["'+clientId+'"]='+$(ul));
         		        	$(ul).append(li);
         		        	$('#input-search-clients-jobs').hideseek();    					
         				} else {
         					layer.msg(data.msg || "Get Job Failed", {icon: 1});
-        					console.log(data.msg || "Get Job Failed");
+        					//console.log(data.msg || "Get Job Failed");
         				}
         			});    			
         		}
@@ -320,7 +317,7 @@ $(function () {
         		});
         		
         		var layerHeight = $("#"+layerPrefix+lyIdx).innerHeight();
-        		console.log('弹框内框高度：'+layerHeight);
+        		//console.log('弹框内框高度：'+layerHeight);
         		$('.tabel-wrapper-scroll').css("height",(layerHeight - 250) + "px");
         		
         		break;
@@ -448,7 +445,7 @@ $(function () {
                             end: function(layero, index){
                             	var rdata = data.data;
                             	var html;
-                            	console.log('li.selected = #tree-clients-jobs > ul > li[data-id="'+rdata.businessKey+'"]');
+                            	//console.log('li.selected = #tree-clients-jobs > ul > li[data-id="'+rdata.businessKey+'"]');
                         		var li = $('#tree-clients-jobs > ul > li[data-id="'+rdata.businessKey+'"]');
                         		if (li == null){
                         			html = 
@@ -488,7 +485,7 @@ $(function () {
                         			$('>ul',$(li)).css('display','block');
                         		}
                         			
-                        		console.log("appended html = "+html);
+                        		//console.log("appended html = "+html);
                             	$('#input-search-clients-jobs').hideseek();
                             	layer.close(lyIdx);
                                 //oTableFresh(false);
@@ -590,7 +587,7 @@ $(function () {
     				return;
     			}
     			
-    			console.log("add new task submit data:"+JSON.stringify(submitData));
+    			//console.log("add new task submit data:"+JSON.stringify(submitData));
     			
     			$.post(base_url + "/tasks/add/batch", {tasks:JSON.stringify(submitData)}, function(data, status) {
     				if (data.code == "200") {
@@ -663,7 +660,7 @@ $(function () {
          */
         $("#modal-addnew-task").on("click","input[name='workType']",function(event){
         	
-        	console.log((prevInputWorkType!==null)+","+(prevInputWorkType != undefined)+","+(prevInputWorkType == this));
+        	//console.log((prevInputWorkType!==null)+","+(prevInputWorkType != undefined)+","+(prevInputWorkType == this));
         	if (prevInputWorkType!=null && prevInputWorkType != undefined && prevInputWorkType == this){
         		event.stopPropagation();
         		return;
@@ -672,7 +669,7 @@ $(function () {
         	prevInputWorkType = this;
         	
         	if (lyIdxOfTaskTypeList != undefined && lyIdxOfTaskTypeList !== null){
-        		console.log("关闭layer");
+        		//console.log("关闭layer");
         		$("#"+layerPrefix+lyIdxOfTaskTypeList).hide(10);
         	}
         	
@@ -685,7 +682,7 @@ $(function () {
         			.css("color","white")
         			.parent().css({"background-color":"#3c8dbc"});
         	
-        	console.log("打开layer");
+        	//console.log("打开layer");
         	if (lyIdxOfTaskTypeList != undefined && lyIdxOfTaskTypeList !== null){
         		$("#"+layerPrefix+lyIdxOfTaskTypeList).show(10);
         		event.stopPropagation();
@@ -809,7 +806,7 @@ $(function () {
 	    		},
 	    		processResults: function (data, page) {
 	    			var rdata = data.data.data;
-	    			console.log("#modal-addnew-client .select2 results mothed data:"+JSON.stringify(rdata)+",page:"+JSON.stringify(page));
+	    			//console.log("#modal-addnew-client .select2 results mothed data:"+JSON.stringify(rdata)+",page:"+JSON.stringify(page));
 	    			var more = (page * 20) < rdata.recordsTotal;
 	    			return {
 	    				
@@ -846,11 +843,11 @@ $(function () {
 					return;
 				}
 				selectedValue = $(this).data("id");
-				console.log("当前选择的【客户，客户ID】=【"+$(this).data("name")+","+selectedValue+"】");
+				//console.log("当前选择的【客户，客户ID】=【"+$(this).data("name")+","+selectedValue+"】");
 			}	
 			iniData.push({id:$(this).data("id"),text:$(this).data("name")});
 		});
-		console.log("新增Job的select2初始化数据[inidata]:"+JSON.stringify(iniData));
+		//console.log("新增Job的select2初始化数据[inidata]:"+JSON.stringify(iniData));
 		
 		//step 2:
     	clientSelect.select2({
@@ -874,7 +871,7 @@ $(function () {
 	    		},
 	    		processResults: function (data, page) {
 	    			var rdata = data.data.data;
-	    			console.log("#modal-addnew-job .select2 results mothed data:"+JSON.stringify(rdata)+",page:"+JSON.stringify(page));
+	    			//console.log("#modal-addnew-job .select2 results mothed data:"+JSON.stringify(rdata)+",page:"+JSON.stringify(page));
 	    			var more = (page * 20) < rdata.recordsTotal;
 	    			return {
 	    				
@@ -893,7 +890,7 @@ $(function () {
     	
     	//step 3:
 		if (selectedValue){
-			console.log("设置选择客户的默认值");
+			//console.log("设置选择客户的默认值");
 			clientSelect.val([selectedValue]).trigger('change');
 		}
     }
@@ -915,7 +912,7 @@ $(function () {
 		if (selectedLi && $(selectedLi).data("id")!="allclients"){
 			
 			selectedType  = $(selectedLi).data("type");
-			console.log("当前选择的[name,id,type]=["+$(selectedLi).data("name")+","+$(selectedLi).data("id")+","+selectedType+"]");
+			//console.log("当前选择的[name,id,type]=["+$(selectedLi).data("name")+","+$(selectedLi).data("id")+","+selectedType+"]");
 			
 			if (selectedType == "client"){
 				iniClientData.push({id:$(selectedLi).data("id"),text:$(selectedLi).data("name")});
@@ -932,8 +929,8 @@ $(function () {
 			}
 
 		}
-		console.log("新增Task的client select2初始化数据[iniClientData]:"+JSON.stringify(iniClientData));
-		console.log("新增Task的job select2初始化数据[iniJobData]:"+JSON.stringify(iniJobData));
+		//console.log("新增Task的client select2初始化数据[iniClientData]:"+JSON.stringify(iniClientData));
+		//console.log("新增Task的job select2初始化数据[iniJobData]:"+JSON.stringify(iniJobData));
     	    	
     	
 		//step 2:
@@ -961,7 +958,7 @@ $(function () {
 	    		},
 	    		processResults: function (data, params) {
 	    			var rdata = data.data.data;
-	    			console.log("#modal-addnew-job client .select2 results data:"+JSON.stringify(rdata)+",params:"+JSON.stringify(params));
+	    			//console.log("#modal-addnew-job client .select2 results data:"+JSON.stringify(rdata)+",params:"+JSON.stringify(params));
 	    			var more = (params.page * 20) < rdata.recordsTotal;
 	    			return {
 	    				
@@ -1001,7 +998,7 @@ $(function () {
 	    		processResults: function (data, params) {
 	    			var rdata = data.data.data;
 	    			var pdata = data.data;
-	    			console.log("#modal-addnew-task job .select2 results data:"+JSON.stringify(rdata)+",params:"+JSON.stringify(params));
+	    			//console.log("#modal-addnew-task job .select2 results data:"+JSON.stringify(rdata)+",params:"+JSON.stringify(params));
 	    			var more = (pdata.params.page * 20) < pdata.recordsTotal;
 	    			return {
 	    				
@@ -1020,19 +1017,19 @@ $(function () {
     	
     	//step 3:
 		if (selectedClientValue){
-			console.log("设置选择客户的默认值");
+			//console.log("设置选择客户的默认值");
 			clientSelect.val([selectedClientValue]).trigger('change');
 		}
 		
 		if (selectedJobValue){
-			console.log("设置选择工作的默认值");
+			//console.log("设置选择工作的默认值");
 			jobSelect.val([selectedJobValue]).trigger('change');
 		}
 
     }
     
     function oTableFresh(){
-    	//oTable.draw();
+    	oTable.draw();
     }
     
 });
