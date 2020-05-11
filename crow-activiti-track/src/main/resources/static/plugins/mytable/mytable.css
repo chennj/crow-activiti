@@ -3,27 +3,31 @@
     margin: 0;
 }
 
+.mytable tr th,td {
+	border: 1px solid #000;
+}
+
 .mytable-scroll {
     overflow-y: scroll;
 }
 
-.mytable .text-center td {
+.mytable-text td {
     white-space: nowrap;
-    padding: 10px;
+    padding: 6px;
 }
 
-.mytable .table-th-css {
+.mytable-th-css {
     background: #efeff4 !important;
     position: relative !important;
-    text-align: center;
+    /*text-align: center;*/
     top: 0;
     white-space: nowrap;
 }
 
-.mytable .table-th-css div {
+.mytable-th-css div {
     border-top: none;
     white-space: nowrap;
-    padding: 10px;
+    padding: 6px;
 }
 
 .mytable .dontshow{

@@ -3,63 +3,47 @@
 	"use strict";
 	
 	// 私有函数
-	var setDatas = function (ds){
+	var setDatas = function (oTable,ds){
 		
 		if (null == ds || ds == undefined){
 			console.log("没有数据")
 			return ;
 		}
 		
-		var myt = $("#tasks-list");
-		var myt_body = $(myt).children("tbody");
-		var myt_head = $(myt).children("thead")
-		var myt_ths = $(myt).children("tr").children("th");
-
+		var $ths = $(oTable.children("thead").children("tr").children("th"));
+		
 		ds.forEach(function(val,index){
 			var item = ds[index];
-			var myt_tr = $("<tr/>");
+			var $tr = $("<tr/>");
 			for (var key in item){
-				var tmp_td;
-				if ($(myt_ths[index]).hasClass("dontshow")){
-					tmp_td = "<td class='dontshow' data-name='"+key+"' data-value='"+item[key]+"'>"+item[key]+"</td>";
+				var td;
+				if ($ths.eq(index).hasClass("dontshow")){
+					td = "<td class='dontshow' data-name='"+key+"' data-value='"+item[key]+"'>"+item[key]+"</td>";
 				} else {
-					tmp_td = "<td data-name='"+key+"' data-value='"+item[key]+"'>"+item[key]+"</td>";
+					td = "<td data-name='"+key+"' data-value='"+item[key]+"'>"+item[key]+"</td>";
 				}
-				myt_tr.append(tmp_td);
+				$tr.append(td);
 			}
 			
-			myt_body.append(myt_tr);			
+			oTable.append($tr);			
 		});
 	};
-	
-	
+
 	$.fn.myTable = function(options) {
 		
 		var defaults = {
 			start: 1,
-			length: 20
+			length: 20,
+			scrollY: 200
 		};
 		
 		var options = jQuery.extend( {}, defaults, options);
 		
+		var $mySelf = $(this);
+		
 		var methods = {
 				
 			init: function (ds){
-				
-				ds.forEach(function(val,index){
-					var item = ds[index];
-					for (var key in item){
-						var tmp_td;
-						if (myt_ths[i].haveClass("dontshow")){
-							tmp_td = "<td class='dontshow' data-name='"+key+"' data-value='"+item[key]+"'>"+item[key]+"</td>";
-						} else {
-							tmp_td = "<td data-name='"+key+"' data-value='"+item[key]+"'>"+item[key]+"</td>";
-						}
-						myt_tr.append(tmp_td);
-					}
-					
-					myt_body.append(myt_tr);			
-				});
 			},
 			draw: function (){
 				
@@ -80,7 +64,7 @@
 					success		: function(data){
 						var rdata = data.data;
 						console.log("右边任务列表数据："+JSON.stringify(data));
-						setDatas(rdata);
+						setDatas($mySelf,rdata);
 					},
 					error		: function(err){
 						console.log("错误："+JSON.stringify(err));
@@ -92,7 +76,11 @@
 		this.each(function(){
 			
 			var $this = $(this);
-			$this.closest("panel").addClass("mytable").addClass("mytable-scroll");
+			var $ths = $($this.children("thead").children("tr").children("th"));
+			$this.closest(".panel").addClass("mytable-scroll");
+			$this.addClass("mytable");
+			$ths.addClass("mytable-th-css");
+
 		});
 		
 		return methods;
