@@ -208,8 +208,8 @@
                 		</div>
                 	</div>
                 	
-                	<div class="task-table-tool" style="position:relative;float:right;background-color:#ddd;">
-                		<div style="top:-30px;"><span>Copy To</span><span>Move To</span><span>Delete</span></div>
+                	<div class="col-sm-12 task-table-tool" style="position:relative;float:right;background-color:#ddd;">
+                		<div class="col-sm-12" style="position:absolution;top:0;"><span>Copy To</span><span>Move To</span><span>Delete</span></div>
                 	</div>			
                 				                	
                 </div>
