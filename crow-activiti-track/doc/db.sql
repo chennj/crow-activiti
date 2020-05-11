@@ -6,6 +6,9 @@
 --	2.逐条执行查询出的结果
 --	ALTER TABLE '表名' DROP FOREIGN KEY '外键名';
 
+-- 检查外键状态
+-- SELECT @@GLOBAL.foreign_key_checks, @@SESSION.foreign_key_checks;
+
 drop table if exists actt_ge_client;
 create table actt_ge_client(
 	id_ varchar(36) NOT NULL COMMENT '主键',
