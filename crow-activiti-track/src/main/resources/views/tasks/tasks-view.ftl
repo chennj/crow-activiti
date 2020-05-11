@@ -55,8 +55,18 @@
 	*/
 	.select2-job-position{margin-left:10%;width:90%;}
 	body .demo-class .layui-layer-title{background:#ccc; color:#fff; border: none;}
+	body .task-type-class .layui-layer {
+	    -webkit-overflow-scrolling: touch;
+	    top: 150px;
+	    left: 0;
+	    margin: 0;
+	    padding: 0;
+	    background-color: #fff;
+	    /*-webkit-background-clip: content;
+	    border-radius: 2px;
+	    box-shadow: 1px 1px 50px rgba(0,0,0,.3);*/
+	}	
 	body .task-type-class .layui-layer-title{background:#ccc; color:#fff; border: none;}
-	
 	body .dataTables_scrollBody{height: calc(100vh - 349px);}
 	</style>
 	
@@ -177,15 +187,15 @@
 						<thead>							
 						  	<tr>
 						  		<th name="id" class="dontshow"></th>
-						  		<th name="clientName" width="150">Client</th>
-							    <th name="jobName" width="150">Job</th>
-							    <th name="name" width="150">Task</th>
-							    <th name="sysStatusName" width="100">Status</th>
-							    <th name="spentTime" width="120">Spent Time</th>
-							    <th name="estimate" width="100">Estimate</th>
-							    <th name="overdueDate" width="120">Deadline</th>
-							    <th name="lastTrackingDate" width="160">Last Tracking Date</th>
-							    <th name="createTime" width="150">Creation Date</th>
+						  		<th name="clientName" width="150"><div>Client</div></th>
+							    <th name="jobName" width="150"><div>Job</div></th>
+							    <th name="name" width="150"><div>Task</div></th>
+							    <th name="sysStatusName" width="100"><div>Status</div></th>
+							    <th name="spentTime" width="120"><div>Spent Time</div></th>
+							    <th name="estimate" width="100"><div>Estimate</div></th>
+							    <th name="overdueDate" width="120" class="hasdate" ><div>Deadline</div></th>
+							    <th name="lastTrackingDate" width="160"><div>Last Tracking Date</div></th>
+							    <th name="createTime" width="150"><div>Creation Date</div></th>
 						  	</tr>
 						</thead>
 		                <tbody>

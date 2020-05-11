@@ -365,7 +365,7 @@ public class TasksController extends BaseController{
     public ReturnT<String> addTasks(
     		@RequestParam(required = true) String tasks){
     	
-    	logger.info("tasks/add/tasks>>>receive json string:"+tasks);
+    	logger.info("tasks/add/batch>>>receive json string:"+tasks);
     	
     	List<RuTask> list = new ArrayList<>();
     	
@@ -523,6 +523,13 @@ public class TasksController extends BaseController{
 	        	if (!inClientList.contains(one.getBusinessKey().trim())){
 	        		inClientList.add(one.getBusinessKey().trim());
 	        	}
+	        }
+	        
+	        if (inClientList.size() == 0){
+	        	inClientList.add(null);
+	        }
+	        if (inJobList.size() == 0){
+	        	inJobList.add(null);
 	        }
 	        
 	        List<GeClient> clientList 		= geClientService.getList("id", inClientList);
