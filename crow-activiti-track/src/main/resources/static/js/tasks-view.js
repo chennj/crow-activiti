@@ -1028,6 +1028,11 @@ $(function () {
 
     }
     
+    $(".choseUserBelong ul li a").on("click",function(){
+    	var tex = $(this).text();
+		$(this).closest(".choseUserBelong").children("button").eq(0).text(tex);
+    });
+    
     function oTableFresh(){
     	oTable.draw();
     }

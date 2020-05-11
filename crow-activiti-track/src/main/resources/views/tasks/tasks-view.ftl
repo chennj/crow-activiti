@@ -55,14 +55,15 @@
 	*/
 	.select2-job-position{margin-left:10%;width:90%;}
 	body .demo-class .layui-layer-title{background:#ccc; color:#fff; border: none;}
-	body .task-type-class .layui-layer {
-	    -webkit-overflow-scrolling: touch;
+	body .layui-layer {
 	    top: 150px;
 	    left: 0;
 	    margin: 0;
 	    padding: 0;
 	    background-color: #fff;
-	    /*-webkit-background-clip: content;
+	    -webkit-background-clip: content;
+	    /*
+	    -webkit-overflow-scrolling: touch;
 	    border-radius: 2px;
 	    box-shadow: 1px 1px 50px rgba(0,0,0,.3);*/
 	}	
@@ -183,16 +184,16 @@
                 		<div class="panel panel-default" id="tasks-list-panel">
                 		<div class="panel-body">
                 		
-						<table id="tasks-list" class="table table-bordered table-hover table-striped" style="width:auto;">
+						<table id="tasks-list" class="table table-bordered table-hover table-striped">
 						<thead>							
 						  	<tr>
 						  		<th name="id" class="dontshow"></th>
 						  		<th name="clientName" width="150"><div>Client</div></th>
 							    <th name="jobName" width="150"><div>Job</div></th>
 							    <th name="name" width="150"><div>Task</div></th>
-							    <th name="sysStatusName" width="100"><div>Status</div></th>
-							    <th name="spentTime" width="120"><div>Spent Time</div></th>
-							    <th name="estimate" width="100"><div>Estimate</div></th>
+							    <th name="sysStatusName" width="120" class="hassubdata-statusmap"><div>Status</div></th>
+							    <th name="spentTime" width="100"><div>Spent Time</div></th>
+							    <th name="estimate" width="80"><div>Estimate</div></th>
 							    <th name="overdueDate" width="120" class="hasdate" ><div>Deadline</div></th>
 							    <th name="lastTrackingDate" width="160"><div>Last Tracking Date</div></th>
 							    <th name="createTime" width="150"><div>Creation Date</div></th>
@@ -200,12 +201,17 @@
 						</thead>
 		                <tbody>
 		                </tbody>
-		                <tfoot></tfoot>
+		                <tfoot>
+		                </tfoot>
 						</table>  
-						
 						</div>        	
                 		</div>
                 	</div>
+                	
+                	<div class="task-table-tool" style="position:relative;float:right;background-color:#ddd;">
+                		<div style="top:-30px;"><span>Copy To</span><span>Move To</span><span>Delete</span></div>
+                	</div>			
+                				                	
                 </div>
 
             </div>

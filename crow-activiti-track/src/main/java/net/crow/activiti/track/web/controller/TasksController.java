@@ -437,6 +437,16 @@ public class TasksController extends BaseController{
     	    	
         JSONObject resultJson = new JSONObject();
         
+        // 获取任务工作类型信息
+        Map<String,Object> taskTypes 	= LocalCache.taskTypeCache();        
+        // 获取任务状态信息
+        Map<String, Object> taskStatus 	= LocalCache.taskStatusCache();
+
+    	JSONObject statusdata = JSONObject.parseObject(JSON.toJSONString(taskStatus));
+    	resultJson.put("statusmap", statusdata);
+    	
+        SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        
     	if (sSearch != null && sSearch.trim().length() > 0){
     		
     		Page<?> page = ruTaskService.page(start, length, clientOrJob, clientOrJobId, sSearch, order);
@@ -444,13 +454,6 @@ public class TasksController extends BaseController{
 	        resultJson.put("data", new JSONArray());
 	        resultJson.put("recordsTotal", page.getTotal());
 	        resultJson.put("recordsFiltered", page.getTotal());
-
-	        SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	        
-	        // 获取任务工作类型信息
-	        Map<String,Object> taskTypes 	= LocalCache.taskTypeCache();        
-	        // 获取任务状态信息
-	        Map<String, Object> taskStatus 	= LocalCache.taskStatusCache();
 	        
 	        List<Map<String, Object>> list = page.getMapResult();
 	        
@@ -505,14 +508,7 @@ public class TasksController extends BaseController{
 	        resultJson.put("data", new JSONArray());
 	        resultJson.put("recordsTotal", page.getTotal());
 	        resultJson.put("recordsFiltered", page.getTotal());
-	
-	        SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	        
-	        // 获取任务工作类型信息
-	        Map<String,Object> taskTypes 	= LocalCache.taskTypeCache();        
-	        // 获取任务状态信息
-	        Map<String, Object> taskStatus 	= LocalCache.taskStatusCache();
-	        
+	        	        
 	        List<String> inJobList 		 = new ArrayList<>();
 	        List<String> inClientList 	 = new ArrayList<>();
 	        
@@ -570,7 +566,7 @@ public class TasksController extends BaseController{
 	        }
 
     	} 
-    	
+    	    	
     	return resultJson.toJSONString();
 
     }

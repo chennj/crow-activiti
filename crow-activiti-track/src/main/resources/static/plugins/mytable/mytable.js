@@ -3,7 +3,9 @@
 	"use strict";
 	
 	// 私有函数
-	var setDatas = function (oTable,ds,page){
+	var setDatas = function (oTable,data,page){
+		
+		var ds = data.data;
 		
 		if (null == ds || ds == undefined){
 			console.log("没有数据")
@@ -19,25 +21,69 @@
 			for (var ith=0; ith<$ths.length; ith++){
 				
 				var key = $ths.eq(ith).attr("name");
+				var divWidth = $ths.eq(ith).attr("width");
+				//console.log("div宽度："+divWidth);
 				var value = item[key];
-				var td;
+				var td = null;
 				if ($ths.eq(ith).hasClass("dontshow")){
-					td = "<td class='dontshow page"+page+"' data-name='"+key+"' data-value='"+value+"'>"+value+"</td>";
+					td = "<td class='dontshow page"+page+"' data-name='"+key+"' data-value='"+value+"'><div>"+value+"</div></td>";
 				} else {
-					td = "<td class='page"+page+"' data-name='"+key+"' data-value='"+value+"'>"+value+"</td>";
+					td = "<td class='page"+page+"' data-name='"+key+"' data-value='"+value+"'><div>"+value+"</div></td>";
 				}
 				
 				if ($ths.eq(ith).hasClass("hasdate")){
-					td = $(td).text("");
-					td = $(td).append("<input type=text class='mytabledate' value='"+value+"' />");
+					td = $(td).html("");
+					td = $(td).append("<div><input type=text style='width:120px;' class='mytabledate' value='"+value+"' /></div>");
 				}
+				
+				if ($ths.eq(ith).hasClass("hassubdata-statusmap")){
+					
+					$ths.eq(ith).css("zIndex",9);
+					
+					var statusmap = data.statusmap;
+					var $subStatus = $(
+						'<div class="btn-group col-sm-12 choseTaskStatus">' +
+						  	'<button type="button" class="btn btn-flat btn-default col-sm-9">'+value+'</button>' +
+						  	'<button type="button" class="btn btn-flat btn-default dropdown-toggle col-sm-3" data-toggle="dropdown">' +
+						    	'<span class="caret"></span>' +
+						    	'<span class="sr-only"></span>' +
+						  	'</button>' +
+						  	'<ul class="dropdown-menu" role="menu">' +
+						  	'</ul>' +
+						'</div>');
+					var subStatus_open 	= '<li>OPEN</li>';
+					var subStatus_close = '<li>CLOSE</li>'
+					for (var key in statusmap){
+						if (statusmap[key]['type'] == 'Open'){
+							subStatus_open 	+= '<li class="active"><a href="javascript:void(0);">&nbsp;&nbsp;'+statusmap[key]["name"]+'</a></li>'
+						} else {
+							subStatus_close += '<li><a href="javascript:void(0);">&nbsp;&nbsp;'+statusmap[key]["name"]+'</a></li>'
+						}
+					}
+					$("ul",$subStatus).append(subStatus_open);
+					$("ul",$subStatus).append(subStatus_close);
+					
+					td = $(td).html("");
+					td = $(td).append($subStatus);
+				}
+				
 				$tr.append(td);
+				if (divWidth != null && divWidth != undefined && index==0){
+					$tr.children("td").eq(ith).children("div").css("width",divWidth+"px");
+					//console.log(key+" div宽度："+divWidth);
+				}
 			}
 			
 			oTable.append($tr);		
 			$(".page"+page+" .mytabledate", oTable).datepicker({
     	    	autoclose: true
     		});
+			
+			$(".page"+page+" .choseTaskStatus ul li a", oTable).on("click",function(){
+				
+				var tex = $(this).text();
+				$(this).closest(".choseTaskStatus").children("button").eq(0).text(tex);
+			});
 		});
 	};
 
@@ -76,10 +122,10 @@
 					data 		: obj,
 					dataType 	: "json",
 					success		: function(data){
-						var rdata = data.data;
-						console.log("右边任务列表数据："+JSON.stringify(data));
+						
+						//console.log("右边任务列表数据："+JSON.stringify(data));
 						$mySelf.children("tbody").html("");
-						setDatas($mySelf,rdata,options.start);
+						setDatas($mySelf,data,options.start);
 					},
 					error		: function(err){
 						console.log("错误："+JSON.stringify(err));
