@@ -38,7 +38,7 @@ import net.crow.activiti.track.common.util.MapUtils;
 
 @Controller
 @RequestMapping("/tasks")
-public class TasksController extends BaseController{
+public class TaskController extends BaseController{
 
 	@Autowired
 	GeClientService geClientService;
