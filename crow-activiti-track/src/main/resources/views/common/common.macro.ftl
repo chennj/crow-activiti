@@ -8,7 +8,7 @@
 	<!-- Tell the browser to be responsive to screen width -->
 	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 	<!-- Bootstrap -->
-	<link rel="stylesheet" href="${request.contextPath}/static/adminlte/bower_components/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" href="${request.contextPath}/static/adminlte/bower_components/bootstrap/css/bootstrap.css">
 	<!-- Font Awesome -->
 	<link rel="stylesheet" href="${request.contextPath}/static/adminlte/bower_components/font-awesome/css/font-awesome.min.css">
 	<!-- Ionicons -->
@@ -43,7 +43,7 @@
 	<!-- jQuery UI 1.11.4 -->
 	<script src="${request.contextPath}/static/adminlte/bower_components/jquery-ui/jquery-ui.min.js"></script>
 	<!-- Bootstrap v3.4.1 -->
-	<script src="${request.contextPath}/static/adminlte/bower_components/bootstrap/js/bootstrap.min.js"></script>
+	<script src="${request.contextPath}/static/adminlte/bower_components/bootstrap/js/bootstrap.js"></script>
 	<!-- FastClick -->
 	<script src="${request.contextPath}/static/adminlte/bower_components/fastclick/fastclick.js"></script>
 	<!-- AdminLTE App -->

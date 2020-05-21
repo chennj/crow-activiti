@@ -18,7 +18,7 @@ $(function () {
     var modalAddnewClientValidate;
     var modalAddnewJobValidate;
     var modalAddnewTaskValidate;
-    
+        
     var oTable;
 	
 	setClientJobTreeHeight();	
@@ -43,6 +43,9 @@ $(function () {
     initTableCheckBox();
     
     initDatePicker();
+    
+    initTaskTableToolView();
+    initTaskTableToolEvent();
     
     // 左边treeview高度设置，计算它的高度使其能撑满屏幕
     function setClientJobTreeHeight(){
@@ -88,6 +91,77 @@ $(function () {
     		oTableFresh();
     	});
 
+    }
+    
+    /**
+     * 初始化右下部任务列表工具栏，滑入滑出
+     */
+    function initTaskTableToolView(){
+    	
+    	var width 			= $("#rightPart").outerWidth();   	
+		var checkboxSelects = 0;
+		
+    	$(".task-list-tool").css({"width":width,"right":-width});
+    	
+    	$("#tasks-list").on("click", "input[type=checkbox]", function(){
+    		    		
+    		if ($(this).hasClass('selectall')){
+    			
+    			checkboxSelects = 0
+    			
+	    		var allCheck = this.checked;
+	    		var checks = $(this).closest('table').children('tbody').find(':checkbox');
+	    		$.each(checks,function(index,item){
+	    			item.checked=allCheck;
+	    			if (allCheck){
+	    				checkboxSelects++;
+	    			}
+	    		});
+    		} else {
+    			if (this.checked){
+    				checkboxSelects++;
+    			} else {
+    				checkboxSelects--;
+    			}
+    		}
+    		
+    		var $page = $(".task-list-tool");
+    		console.log("已选中的box数量："+checkboxSelects);
+    		if (checkboxSelects>0){
+    			if ($page.hasClass("tool-e")){
+    				$(".task-list-tool").children("button").children('span').text(checkboxSelects+'');
+    				return;
+    			} else {
+        	    	$(".task-list-tool").children("button").append('<span class="badge bg-green">'+checkboxSelects+'</span>');    				
+    			}
+    		} else {
+    			if (!$page.hasClass("tool-e")){
+    				return;
+    			} else {
+    				$(".task-list-tool").children("button").children('span').remove();
+    			}
+    		}
+    		
+    		$('.task-list-tool button[data-toggle="popover"]').popover('hide');
+    		
+    		if($page.is(":animated")){
+    			return;
+    			console.log("正在滑动，返回");
+    		}
+    		
+    		var right;
+    		if ($page.hasClass("tool-e")){
+    			$page.removeClass("tool-e").addClass("tool-c");
+    			console.log("开始滑出");
+    			right = -width+"px";
+    		} else {
+    			$page.removeClass("tool-c").addClass("tool-e");
+    			console.log("开始滑入");
+    			right = "0px";
+    		}
+    		$page.animate({right:right},1000);
+    		
+    	});
     }
     
     /**
@@ -774,6 +848,206 @@ $(function () {
         $('.date input[type="text"]').datepicker({
         	autoclose: true
     	});
+    }
+    
+    /**
+     * init task table tool popover event
+     */
+    function initTaskTableToolEvent(){
+
+        initTaskTableToolCopyto();
+        initTaskTableToolMoveto();
+        initTaskTableToolAssignto();
+        initTaskTableToolChangeStatus();
+
+    	$('.task-list-tool button[data-toggle="popover"]').on('click',function(){
+    		
+    		$(this).siblings('button[data-toggle="popover"]').popover('hide');
+    		
+    		$('.select2',$(this)).select2({
+            	dropdownParent:$(this).parent(),
+    	    	placeholder: "-- Select Client --",
+                width: "100%"
+            });
+    	});
+    }
+    /**
+     * task table tool copyto
+     * @returns
+     */
+    function initTaskTableToolCopyto(){
+    	
+    	$('#copyto').popover({
+    		container: 'body',
+    		content:function () {
+    		    var $html =$(
+    				'<div class="box" id="popover_copyto" >'+
+    			    '<div class="body-header">'+
+    			    '	<h3 class="box-title">Copy 1 task to another job</h3>'+
+    			    '</div>'+
+    			    '<div class="box-body">'+
+    			    '	<div class="col-sm-12">'+
+    			    '	<select class="select2" style="width: 100%;" name="selectclient">'+
+    		        '        <option></option>'+
+    		        '    </select>'+
+    		        '    </div>'+
+    		        '    <div class="row"><h3>&nbsp;</h3></div>'+
+    		        '    <div class="col-sm-12">'+
+    			    '	 <select class=" select2" style="width: 100%;" name="selectjob">'+
+    		        '        <option></option>'+
+    		        '    </select>'+
+    		        '    </div>'+
+    		        '    <div class="col-sm-12">'+
+    		        '    	<hr>'+
+    		        '    </div>'+
+    		        '    <div class="col-sm-12">'+
+    		        '    	<div class="col-sm-6">'+
+    		        '    	<button type=button class="btn btn-sm btn-flat btn-primary">Copy</button>'+
+    		        '    	</div>'+
+    		        '    	<div class="col-sm-6">'+
+    		        '    	<button type=button class="btn btn-sm btn-flat btn-default">Cancel</button>'+
+    		        '    	</div>'+
+    		        '    </div>'+
+    			    '</div>'+
+    			  	'</div>');
+    			return $html;
+            }
+    	});
+    	
+    }
+    
+    /**
+     * task table move to
+     * @returns
+     */
+    function initTaskTableToolMoveto(){
+    	
+    	$('#moveto').popover({
+    		container: 'body',
+    		content:function () {
+    		    var $html =$(
+    				'<div class="box" id="popover_moveto" >'+
+    			    '<div class="body-header">'+
+    			    '	<h3 class="box-title">Copy 1 task to another job</h3>'+
+    			    '</div>'+
+    			    '<div class="box-body">'+
+    			    '	<div class="col-sm-12">'+
+    			    '	<select class="select2" style="width: 100%;" name="selectclient">'+
+    		        '        <option></option>'+
+    		        '    </select>'+
+    		        '    </div>'+
+    		        '    <div class="row"><h3>&nbsp;</h3></div>'+
+    		        '    <div class="col-sm-12">'+
+    			    '	 <select class=" select2" style="width: 100%;" name="selectjob">'+
+    		        '        <option></option>'+
+    		        '    </select>'+
+    		        '    </div>'+
+    		        '    <div class="col-sm-12">'+
+    		        '    	<hr>'+
+    		        '    </div>'+
+    		        '    <div class="col-sm-12">'+
+    		        '    	<div class="col-sm-6">'+
+    		        '    	<button type=button class="btn btn-sm btn-flat btn-primary">Copy</button>'+
+    		        '    	</div>'+
+    		        '    	<div class="col-sm-6">'+
+    		        '    	<button type=button class="btn btn-sm btn-flat btn-default">Cancel</button>'+
+    		        '    	</div>'+
+    		        '    </div>'+
+    			    '</div>'+
+    			  	'</div>');
+    			return $html;
+            }
+    	});
+    	
+    }
+    
+    /**
+     * task table assign to
+     * @returns
+     */
+    function initTaskTableToolAssignto(){
+    	
+    	$('#assignto').popover({
+    		container: 'body',
+    		content:function () {
+    		    var $html =$(
+    				'<div class="box" id="popover_assignto" >'+
+    			    '<div class="body-header">'+
+    			    '	<h3 class="box-title">Copy 1 task to another job</h3>'+
+    			    '</div>'+
+    			    '<div class="box-body">'+
+    			    '	<div class="col-sm-12">'+
+    			    '	<select class="select2" style="width: 100%;" name="selectclient">'+
+    		        '        <option></option>'+
+    		        '    </select>'+
+    		        '    </div>'+
+    		        '    <div class="row"><h3>&nbsp;</h3></div>'+
+    		        '    <div class="col-sm-12">'+
+    			    '	 <select class=" select2" style="width: 100%;" name="selectjob">'+
+    		        '        <option></option>'+
+    		        '    </select>'+
+    		        '    </div>'+
+    		        '    <div class="col-sm-12">'+
+    		        '    	<hr>'+
+    		        '    </div>'+
+    		        '    <div class="col-sm-12">'+
+    		        '    	<div class="col-sm-6">'+
+    		        '    	<button type=button class="btn btn-sm btn-flat btn-primary">Copy</button>'+
+    		        '    	</div>'+
+    		        '    	<div class="col-sm-6">'+
+    		        '    	<button type=button class="btn btn-sm btn-flat btn-default">Cancel</button>'+
+    		        '    	</div>'+
+    		        '    </div>'+
+    			    '</div>'+
+    			  	'</div>');
+    			return $html;
+            }
+    	});
+    }
+    
+    /**
+     * task table assign to
+     * @returns
+     */
+    function initTaskTableToolChangeStatus(){
+    	
+    	$('#changestatus').popover({
+    		container: 'body',
+    		content:function () {
+    		    var $html =$(
+    				'<div class="box" id="popover_changestatus" >'+
+    			    '<div class="body-header">'+
+    			    '	<h3 class="box-title">Copy 1 task to another job</h3>'+
+    			    '</div>'+
+    			    '<div class="box-body">'+
+    			    '	<div class="col-sm-12">'+
+    			    '	<select class="select2" style="width: 100%;" name="selectclient">'+
+    		        '        <option></option>'+
+    		        '    </select>'+
+    		        '    </div>'+
+    		        '    <div class="row"><h3>&nbsp;</h3></div>'+
+    		        '    <div class="col-sm-12">'+
+    			    '	 <select class=" select2" style="width: 100%;" name="selectjob">'+
+    		        '        <option></option>'+
+    		        '    </select>'+
+    		        '    </div>'+
+    		        '    <div class="col-sm-12">'+
+    		        '    	<hr>'+
+    		        '    </div>'+
+    		        '    <div class="col-sm-12">'+
+    		        '    	<div class="col-sm-6">'+
+    		        '    	<button type=button class="btn btn-sm btn-flat btn-primary">Copy</button>'+
+    		        '    	</div>'+
+    		        '    	<div class="col-sm-6">'+
+    		        '    	<button type=button class="btn btn-sm btn-flat btn-default">Cancel</button>'+
+    		        '    	</div>'+
+    		        '    </div>'+
+    			    '</div>'+
+    			  	'</div>');
+    			return $html;
+            }
+    	});
+    	
     }
 	
 	/* ------------------------- other function --------------- */

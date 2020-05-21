@@ -69,6 +69,40 @@
 	}	
 	body .task-type-class .layui-layer-title{background:#ccc; color:#fff; border: none;}
 	body .dataTables_scrollBody{height: calc(100vh - 349px);}
+	
+    .task-list-tool{
+    	position:absolute;
+    	background-color:#f8f9fa;
+    	padding:8px 4px 8px 0px;
+    	height:auto;
+    	z-index:1;
+    	color:gray;
+    }
+    
+    .task-list-tool .dropdown-toggle::after {
+	    display: inline-block;
+	    width: 0;
+	    height: 0;
+	    margin-left: .255em;
+	    vertical-align: .255em;
+	    content: "";
+	    border-top: 0;
+	    border-right: .3em solid transparent;
+	    border-bottom: .3em solid;
+	    border-left: .3em solid transparent;
+	}
+	
+	.popover{
+		max-width:660px;
+		min-width:450px;
+	}
+	
+	.btn-app {
+	    padding: 0px 5px;
+	    margin: 0 25px 5px 15px;
+	    min-width: 50px;
+	    height: 50px;
+	}
 	</style>
 	
 </head>
@@ -157,7 +191,7 @@
                 </div>
                 
                 <!-- tasks -->
-                <div class="col-sm-8">
+                <div class="col-sm-8" id="rightPart">
                 	<div class="row">
                 		<div class="panel panel-default">
                 		<div class="panel-body">
@@ -187,7 +221,7 @@
 						<table id="tasks-list" class="table table-bordered table-hover table-striped">
 						<thead>							
 						  	<tr>
-						  		<th name="id" class="dontshow"></th>
+						  		<th name="id" class="hascheckbox"><input type=checkbox class=selectall></th>
 						  		<th name="clientName" width="150"><div>Client</div></th>
 							    <th name="jobName" width="150"><div>Job</div></th>
 							    <th name="name" width="150"><div>Task</div></th>
@@ -208,10 +242,52 @@
                 		</div>
                 	</div>
                 	
-                	<div class="col-sm-12 task-table-tool" style="position:relative;float:right;background-color:#ddd;">
-                		<div class="col-sm-12" style="position:absolution;top:0;"><span>Copy To</span><span>Move To</span><span>Delete</span></div>
-                	</div>			
-                				                	
+					<div class="col-sm-12 task-list-tool">
+					
+		 				<button class="btn btn-app"
+							data-toggle="popover" 
+							data-html="true" 
+							data-placement="top"
+							id="copyto">
+		                	<i class="fa fa-copy"></i> Copy To
+		              	</button>
+		              	
+		              	<button class="btn btn-app"
+							data-toggle="popover" 
+							data-html="true" 
+							data-placement="top"
+							id="moveto">
+		                	<i class="fa fa-archive"></i> Move To
+		              	</button>	
+		              	
+		              	<button class="btn btn-app"
+							data-toggle="popover" 
+							data-html="true" 
+							data-placement="top"
+							id="assignto">
+		                	<i class="fa fa-user-plus"></i> Assign To
+		              	</button>				
+					
+						<button class="btn btn-app"
+							data-toggle="popover" 
+							data-html="true" 
+							data-placement="top"
+							id="changestatus">
+		                	<i class="fa fa-exchange"></i> Change Status
+		              	</button>
+		              	
+		              	<button class="btn btn-app"
+							id="deleteselected">
+		                	<i class="fa fa-trash-o"></i> Delete
+		              	</button>
+		              	
+		              	<button class="btn btn-app"
+							id="clearselected">
+		                	<i class="fa fa-eraser"></i> Clear Selected
+		              	</button>
+		              					
+					</div>
+			                	
                 </div>
 
             </div>
@@ -647,12 +723,12 @@
 		  	<td>
 			  	<div class="input-group input-group-sm">
 					<input type="text" name="name" class="form-control" placeholder="Enter Task Name">
-					<span class="input-group-btn">
+					<div class="input-group-btn">
 					  	<button type="button" class="btn btn-info btn-flat dropdown-toggle" data-toggle="dropdown"><i class="fa fa-align-left"></i></button>
 					  	<ul class="dropdown-menu" role="menu">
 						    <li><textarea rows="6" cols="30" name="desc"></textarea></li>
 					  	</ul>					  	
-					</span>			  	
+					</div>			  	
 			  	</div>
 		  	</td>
 			<td>
@@ -706,6 +782,6 @@
 <div 
 	id="modal-addnew-task-type-list" 
 	style="display:none;">
-</div>		
+</div>
 
 </html>

@@ -36,6 +36,11 @@
 					td = $(td).append("<div><input type=text style='width:120px;' class='mytabledate' value='"+value+"' /></div>");
 				}
 				
+				if ($ths.eq(ith).hasClass("hascheckbox")){
+					td = $(td).html("");
+					td = $(td).append("<div><input type=checkbox /></div>");					
+				}
+				
 				if ($ths.eq(ith).hasClass("hassubdata-statusmap")){
 					
 					$ths.eq(ith).css("zIndex",9);
