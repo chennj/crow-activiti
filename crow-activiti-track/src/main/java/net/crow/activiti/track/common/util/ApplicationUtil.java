@@ -1,5 +1,7 @@
 package net.crow.activiti.track.common.util;
 
+import java.util.Map;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -93,5 +95,16 @@ public class ApplicationUtil implements ApplicationContextAware{
         // 类名首字母小写
         cs[0] += 32;
         return String.valueOf(cs);
+    }
+    
+    @SuppressWarnings("unchecked")
+	public static <T> T getBean2(Class<T> cls){
+    	@SuppressWarnings("rawtypes")
+		Map beanMaps = applicationContext.getBeansOfType(cls);
+    	if (beanMaps!=null && !beanMaps.isEmpty()) {
+    		return (T) beanMaps.values().iterator().next();
+    	} else {
+    		return null;
+    	}
     }
 }
